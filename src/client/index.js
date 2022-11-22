@@ -1,3 +1,7 @@
 import { createApp } from './base';
+import routes from './routes';
 
-export default { createApp };
+export default {
+	createApp,
+	routes,
+};
