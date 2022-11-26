@@ -9,11 +9,11 @@ const routes = [
 	},
 	{
 		component: Profile,
-		path: '/profile/:id',
+		path: '/profile/:profileID',
 	},
 	{
 		component: Squad,
-		path: '/squad/:id',
+		path: '/squad/:squadID',
 	},
 ];
 

@@ -1,37 +1,37 @@
-import {
-	useContext,
-	useState,
-} from 'react';
+import { useContext } from 'react';
 
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 import LightModeIcon from '@mui/icons-material/LightMode';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import MenuIcon from '@mui/icons-material/Menu';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import NightlightRoundIcon from '@mui/icons-material/NightlightRound';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import { Link as RRDLink } from 'react-router-dom';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import { AuthenticationContext } from '../contexts/authentication';
 import { PreferencesContext } from '../contexts/preferences';
+import { UserContext } from '../contexts/user';
 
 const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
-	const { userID } = useContext(AuthenticationContext);
 	const {
+		dispatchUserAction,
+		userState: {
+			authenticated,
+			userID,
+		},
+	} = useContext(UserContext);
+	const {
+		allowNotificationsState,
 		darkModeState,
+		setAllowNotificationsState,
 		setDarkModeState,
 	} = useContext(PreferencesContext);
-	const [drawerOpen, setDrawerOpen] = useState(false);
 
 	const ButtonSet = () => 
 		<>
@@ -51,123 +51,104 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 				}
 			</IconButton>
 
-			<IconButton
-				color="inherit"
-				component={RRDLink}
-				to="/about"
-			>
-				<Tooltip title="About">
-					<InfoIcon />
-				</Tooltip>
-			</IconButton>
+			{authenticated
+				&&
+				<IconButton
+					color="inherit"
+					onClick={() => setAllowNotificationsState((prevState) => !prevState)}
+				>
+					{allowNotificationsState
+						?
+						<Tooltip title="Turn Off Notifications">
+							<NotificationsIcon />
+						</Tooltip>
+						:
+						<Tooltip title="Turn On Notifications">
+							<NotificationsOffIcon />
+						</Tooltip>
+					}
 
-			<IconButton
-				color="inherit"
-				component={RRDLink}
-				to={`/profile/${userID}`}
-			>
-				<Tooltip title="My Profile">
-					<FolderSharedIcon />
-				</Tooltip>
-			</IconButton>
+				</IconButton>}
+
+			<nav>
+				<IconButton
+					color="inherit"
+					component={RRDLink}
+					to="/about"
+				>
+					<Tooltip title="About">
+						<InfoIcon />
+					</Tooltip>
+				</IconButton>
+
+				{authenticated && 
+					<IconButton
+						color="inherit"
+						component={RRDLink}
+						to={`/profile/${userID}`}
+					>
+						<Tooltip title="My Profile">
+							<AccountCircleIcon />
+						</Tooltip>
+					</IconButton>}
+			</nav>
+
+			{authenticated
+				?
+				<IconButton
+					color="inherit"
+					onClick={() => dispatchUserAction({ type: 'Logout' }) }
+				>
+					<Tooltip title="Logout">
+						<LogoutIcon />
+					</Tooltip>
+				</IconButton>
+				: 
+				<IconButton
+					color="inherit"
+					// onClick={() => }
+				>
+					<Tooltip title="Login">
+						<LoginIcon />
+					</Tooltip>
+				</IconButton>
+			}
 		</>
 	;
 	
 	return (
 		<>
-			<Box
+			<AppBar
+				position="sticky"
 				sx={{
 					display: {
+						lg: 'flex',
 						md: 'flex',
 						sm: 'none',
+						xl: 'flex',
+						xs: 'none',
 					},
 				}}
 			>
-				<AppBar component="nav">
-					<Toolbar>
-						<IconButton
-							aria-label="open drawer"
-							color="inherit"
-							edge="start"
-							onClick={() => setDrawerOpen((prevState) => !prevState)}
-							sx={{
-								display: { sm: 'none' },
-								mr: 2,
-							}}
-						>
-							<MenuIcon />
-						</IconButton>
-						<Typography
-							component="div"
-							sx={{
-								display: {
-									sm: 'block',
-									xs: 'none',
-								}, 
-								flexGrow: 1,
-							}}
-							variant="h6"
-						>
-							Squad
-						</Typography>
-						<Box
-							sx={{
-								display: {
-									md: 'block',
-									sm: 'none',
-								},
-							}}
-						>
-							<ButtonSet />
-						</Box>
-					</Toolbar>
-				</AppBar>
-				<Box component="nav">
-					<Drawer
-						ModalProps={{ keepMounted: true }}
-						onClose={() => setDrawerOpen((prevState) => !prevState)}
-						open={drawerOpen}
+				<Toolbar>
+					<Typography
+						component="div"
 						sx={{
-							'& .MuiDrawer-paper': {
-								boxSizing: 'border-box',
-								width: 240,
-							},
 							display: {
-								sm: 'none',
-								xs: 'block',
+								sm: 'block',
+								xs: 'none',
 							},
+							flexGrow: 1,
 						}}
-						variant="temporary"
+						variant="h6"
 					>
-						<Box
-							onClick={() => setDrawerOpen((prevState) => !prevState)}
-							sx={{ textAlign: 'center' }}
-						>
-							<Typography
-								sx={{ my: 2 }}
-								variant="h6"
-							>
-								Squad
-							</Typography>
-							<Divider />
-							<List>
-								{[].map((item) => 
-									<ListItem
-										disablePadding
-										key={item}
-									>
-										<ListItemButton sx={{ textAlign: 'center' }}>
-											<ListItemText primary={item} />
-										</ListItemButton>
-									</ListItem>)}
-							</List>
-						</Box>
-					</Drawer>
-				</Box>
-			</Box>
+							Squad
+					</Typography>
+					<ButtonSet />
+				</Toolbar>
+			</AppBar>
 			{children}
 			<AppBar
-				color="primary"
 				position="fixed"
 				sx={{
 					bottom: 0,
@@ -178,7 +159,7 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 					top: 'auto',
 				}}
 			>
-				<Toolbar>
+				<Toolbar component="nav">
 					<ButtonSet />
 					{/* <StyledFab
 						aria-label="add"

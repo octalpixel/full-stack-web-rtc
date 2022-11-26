@@ -43,7 +43,7 @@
     "eol-last": ["error", "always"],
     "function-call-argument-newline": ["error", "always"],
     "function-paren-newline": ["error", "multiline-arguments"],
-    "indent": ["error", "tab"],
+    "indent": ["error", "tab", { "SwitchCase": 1 }],
     "jsx-quotes": ["error", "prefer-double"],
     "key-spacing": [
       "error",

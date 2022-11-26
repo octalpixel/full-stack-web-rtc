@@ -1,29 +1,47 @@
 import {
-	Dispatch, ReactElement, SetStateAction, createContext, useEffect,
+	Dispatch,
+	ReactElement,
+	SetStateAction,
+	createContext,
+	useContext,
+	useEffect,
 	useMemo,
 	useState,
 } from 'react';
 
 import {
-	ThemeProvider, createTheme,
+	ThemeProvider,
+	createTheme,
 } from '@mui/material/styles';
-
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+import { UserContext } from './user';
+
 interface PreferencesContextValue {
+	allowNotificationsState: boolean;
 	darkModeState: boolean;
+	setAllowNotificationsState: Dispatch<SetStateAction<boolean>>;
 	setDarkModeState: Dispatch<SetStateAction<boolean>>;
 }
 
 export const PreferencesContext = createContext<PreferencesContextValue>({} as PreferencesContextValue);
 
 export const PreferencesProvider = ({ children }: { children: ReactElement }): ReactElement => {
+	const { userState: { authenticated } } = useContext(UserContext);
+	const [allowNotificationsState, setAllowNotificationsState] = useState<boolean>();
 	const [darkModeState, setDarkModeState] = useState<boolean>();
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
 	useEffect(
 		() => setDarkModeState(prefersDarkMode),
 		[prefersDarkMode],
+	);
+
+	useEffect(
+		() => {
+			if (!authenticated) setAllowNotificationsState(false);
+		},
+		[authenticated],
 	);
 
 	const theme = useMemo(
@@ -40,6 +58,7 @@ export const PreferencesProvider = ({ children }: { children: ReactElement }): R
 					success: { main: '#154734' },
 					warning: { main: '#FFB81C' },
 				},
+				typography: { fontFamily: 'monospace' },
 			});
 		},
 		[darkModeState],
@@ -48,7 +67,9 @@ export const PreferencesProvider = ({ children }: { children: ReactElement }): R
 	return (
 		<PreferencesContext.Provider
 			value={{
+				allowNotificationsState: allowNotificationsState as boolean,
 				darkModeState: darkModeState as boolean,
+				setAllowNotificationsState: setAllowNotificationsState as Dispatch<SetStateAction<boolean>>,
 				setDarkModeState: setDarkModeState as Dispatch<SetStateAction<boolean>>,
 			}}
 		>

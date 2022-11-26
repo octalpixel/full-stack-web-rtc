@@ -8,6 +8,7 @@ specifiers:
   '@mui/icons-material': ^5.10.14
   '@mui/material': ^5.10.14
   '@types/jsonwebtoken': ^8.5.9
+  '@types/lodash.clonedeep': ^4.5.7
   '@types/node': ^18.11.9
   '@types/react': ^18.0.24
   '@types/react-dom': ^18.0.8
@@ -22,6 +23,7 @@ specifiers:
   fastify: ^4.10.0
   fastify-socket.io: ^4.0.0
   jsonwebtoken: ^8.5.1
+  lodash.clonedeep: ^4.5.0
   react: ^18.2.0
   react-dom: ^18.2.0
   react-router-dom: ^6.4.3
@@ -43,6 +45,7 @@ dependencies:
   fastify: 4.10.0
   fastify-socket.io: 4.0.0_socket.io@4.5.3
   jsonwebtoken: 8.5.1
+  lodash.clonedeep: 4.5.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-router-dom: 6.4.3_biqbaboplfbrettd7655fr4n2y
@@ -52,6 +55,7 @@ dependencies:
 
 devDependencies:
   '@types/jsonwebtoken': 8.5.9
+  '@types/lodash.clonedeep': 4.5.7
   '@types/node': 18.11.9
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.9
@@ -846,6 +850,16 @@ packages:
     resolution: {integrity: sha512-272FMnFGzAVMGtu9tkr29hRL6bZj4Zs1KZNeHLnKqAvp06tAIcarTMwOh8/8bz4FmKRcMxZhZNeUAQsNLoiPhg==}
     dependencies:
       '@types/node': 18.11.9
+    dev: true
+
+  /@types/lodash.clonedeep/4.5.7:
+    resolution: {integrity: sha512-ccNqkPptFIXrpVqUECi60/DFxjNKsfoQxSQsgcBJCX/fuX1wgyQieojkcWH/KpE3xzLoWN/2k+ZeGqIN3paSvw==}
+    dependencies:
+      '@types/lodash': 4.14.190
+    dev: true
+
+  /@types/lodash/4.14.190:
+    resolution: {integrity: sha512-5iJ3FBJBvQHQ8sFhEhJfjUP+G+LalhavTkYyrAYqz5MEJG+erSv0k9KJLb6q7++17Lafk1scaTIFXcMJlwK8Mw==}
     dev: true
 
   /@types/node/18.11.9:
@@ -2539,6 +2553,10 @@ packages:
     dependencies:
       p-locate: 5.0.0
     dev: true
+
+  /lodash.clonedeep/4.5.0:
+    resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
+    dev: false
 
   /lodash.includes/4.3.0:
     resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==}

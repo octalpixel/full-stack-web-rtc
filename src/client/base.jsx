@@ -7,7 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { StaticRouter } from 'react-router-dom/server';
 
 import App from './App';
-import { AuthenticationProvider } from './contexts/authentication';
+import { AuthenticationProvider } from './contexts/user';
 import { PreferencesProvider } from './contexts/preferences';
 
 const Router = import.meta.env.SSR
@@ -17,17 +17,15 @@ const Router = import.meta.env.SSR
 export function createApp(ctx, url) {
 	return (
 		<StrictMode>
-			{/* <BrowserRouter> */}
 			<Suspense>
 				<Router location={url}>
-					<PreferencesProvider>
-						<AuthenticationProvider>
+					<AuthenticationProvider>
+						<PreferencesProvider>
 							<App />
-						</AuthenticationProvider>
-					</PreferencesProvider>
+						</PreferencesProvider>
+					</AuthenticationProvider>
 				</Router>
 			</Suspense>
-			{/* </BrowserRouter> */}
 		</StrictMode>
 	);
 }
