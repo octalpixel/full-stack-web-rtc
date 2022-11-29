@@ -1,15 +1,17 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 import App from './App';
-import { AuthenticationProvider } from './contexts/user';
+import { UserProvider } from './contexts/user';
 
-ReactDOM
-	.createRoot(document.getElementById('root') as HTMLElement)
-	.render(
-		<React.StrictMode>
-			<AuthenticationProvider>
-				<App />
-			</AuthenticationProvider>
-		</React.StrictMode>,
-	);
+createRoot(document.getElementById('root') as HTMLElement).render(
+	<React.StrictMode>
+		<UserProvider>
+			<App />
+		</UserProvider>
+	</React.StrictMode>,
+);
+
+if ('serviceWorker' in navigator) {
+	navigator.serviceWorker.register('/service-worker.js');
+}

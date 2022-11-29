@@ -131,7 +131,7 @@ type NewConversationMessage = {
 };
 
 type Ping = {
-	
+	type: 'Ping';
 };
 
 export type UserAction = BudConnected
@@ -183,7 +183,7 @@ export default function userReducer(
 
 			return unauthenticatedUserState;
 		}
-		case 'NewBudConnection': {
+		case 'BudConnected': {
 
 			return state;
 		}
@@ -195,7 +195,6 @@ export default function userReducer(
 			};
 		}
 		case 'NewConversationMessage': {
-			const { payload: {} } = action;
 			return state;
 		}
 		default:

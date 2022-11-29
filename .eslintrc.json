@@ -68,9 +68,15 @@
     "newline-per-chained-call": "error",
     "no-array-constructor": "error",
     "no-extra-boolean-cast": ["error", { "enforceForLogicalOperands": true }],
-    // "no-extra-parens": ["error", "all", { "ignoreJSX": "multi-line" }],
     "no-extra-parens": "off",
-    "@typescript-eslint/no-extra-parens": "error",
+    "@typescript-eslint/no-extra-parens": [
+      "error",
+      "all",
+      {
+        "ignoreJSX": "multi-line",
+        "nestedBinaryExpressions": false
+      }
+    ],
     "no-lonely-if": "error",
     "no-multi-spaces": "error",
     "no-multiple-empty-lines": ["error", { "max": 1 }],

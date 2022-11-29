@@ -1,6 +1,6 @@
 import About from './screens/About';
 import Profile from './screens/Profile';
-import Squad from './screens/Squad';
+import Squad from './screens/Conversation';
 
 const routes = [
 	{

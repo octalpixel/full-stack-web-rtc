@@ -1,0 +1,23 @@
+{
+	"background_color": "#FFFFFF",
+	"categories": ["WebRTC", "Peer to Peer", "Chat", "Video Call", "File Share"],
+	"description": "Direct, Encrypted Peer to Peer Communication.",
+	"dir": "ltr",
+	"display": "standalone",
+  "id": "/index.html",
+	"icons": [
+    {
+      "src": "/images/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "lang": "en-US",
+  "name": "Squad",
+  "orientation": "any",
+  "scope": ".",
+  "short_name": "Squad",
+  "start_url": "/index.html",
+  "theme_color": "#008E97"
+}

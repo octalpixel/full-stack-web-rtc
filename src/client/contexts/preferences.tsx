@@ -17,20 +17,29 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { UserContext } from './user';
 
+export enum Language {
+	English = 'English',
+	Español = 'Español',
+	中文 = '中文',
+}
+
 interface PreferencesContextValue {
 	allowNotificationsState: boolean;
 	darkModeState: boolean;
+	languageState: Language;
 	setAllowNotificationsState: Dispatch<SetStateAction<boolean>>;
 	setDarkModeState: Dispatch<SetStateAction<boolean>>;
+	setLanguageState: Dispatch<SetStateAction<Language>>;
 }
 
 export const PreferencesContext = createContext<PreferencesContextValue>({} as PreferencesContextValue);
 
 export const PreferencesProvider = ({ children }: { children: ReactElement }): ReactElement => {
 	const { userState: { authenticated } } = useContext(UserContext);
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const [allowNotificationsState, setAllowNotificationsState] = useState<boolean>();
 	const [darkModeState, setDarkModeState] = useState<boolean>();
-	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+	const [languageState, setLanguageState] = useState(Language.English);
 
 	useEffect(
 		() => setDarkModeState(prefersDarkMode),
@@ -69,8 +78,10 @@ export const PreferencesProvider = ({ children }: { children: ReactElement }): R
 			value={{
 				allowNotificationsState: allowNotificationsState as boolean,
 				darkModeState: darkModeState as boolean,
+				languageState,
 				setAllowNotificationsState: setAllowNotificationsState as Dispatch<SetStateAction<boolean>>,
 				setDarkModeState: setDarkModeState as Dispatch<SetStateAction<boolean>>,
+				setLanguageState,
 			}}
 		>
 			<ThemeProvider theme={theme}>

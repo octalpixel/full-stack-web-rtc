@@ -14,7 +14,6 @@ const fastify = Fastify();
 
 (async () => {
 	await fastify.register(socketioServer);
-	await fastify.ready();
 
 	fastify.io.use(
 		(socket, next) => {

@@ -1,21 +1,31 @@
-import { useContext } from 'react';
+import {
+	useContext,
+	useState,
+} from 'react';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
+import LanguageIcon from '@mui/icons-material/Language';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import NightlightRoundIcon from '@mui/icons-material/NightlightRound';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import { Link as RRDLink } from 'react-router-dom';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import { PreferencesContext } from '../contexts/preferences';
+import {
+	Language,
+	PreferencesContext,
+} from '../contexts/preferences';
 import { UserContext } from '../contexts/user';
 
 const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
@@ -29,92 +39,156 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 	const {
 		allowNotificationsState,
 		darkModeState,
+		languageState,
 		setAllowNotificationsState,
 		setDarkModeState,
+		setLanguageState,
 	} = useContext(PreferencesContext);
 
-	const ButtonSet = () => 
-		<>
-			<IconButton
-				color="inherit"
-				onClick={() => setDarkModeState((prevState) => !prevState)}
-			>
-				{darkModeState
-					? 
-					<Tooltip title="Light Mode">
-						<LightModeIcon />
-					</Tooltip>
-					:
-					<Tooltip title="Dark Mode">
-						<NightlightRoundIcon />
-					</Tooltip>
-				}
-			</IconButton>
-
-			{authenticated
-				&&
+	const ButtonSet = () => {
+		const [languageMenuAnchorElement, setLanguageMenuAnchorElement] = useState<HTMLButtonElement | null>(null);
+		return (
+			<>
 				<IconButton
 					color="inherit"
-					onClick={() => setAllowNotificationsState((prevState) => !prevState)}
+					onClick={() => setDarkModeState((prevState) => !prevState)}
 				>
-					{allowNotificationsState
-						?
-						<Tooltip title="Turn Off Notifications">
-							<NotificationsIcon />
+					{darkModeState
+						? 
+						<Tooltip title="Light Mode">
+							<LightModeIcon />
 						</Tooltip>
 						:
-						<Tooltip title="Turn On Notifications">
-							<NotificationsOffIcon />
+						<Tooltip title="Dark Mode">
+							<NightlightRoundIcon />
 						</Tooltip>
 					}
-
-				</IconButton>}
-
-			<nav>
-				<IconButton
-					color="inherit"
-					component={RRDLink}
-					to="/about"
-				>
-					<Tooltip title="About">
-						<InfoIcon />
-					</Tooltip>
 				</IconButton>
 
-				{authenticated && 
+				<IconButton
+					color="inherit"
+					onClick={({ currentTarget }) => setLanguageMenuAnchorElement(currentTarget)}
+				>
+					<Tooltip title="Language">
+						<LanguageIcon />
+					</Tooltip>
+				</IconButton>
+				<Menu
+					// PaperProps={{
+					// 	elevation: 0,
+					// 	sx: {
+					// 		overflow: 'visible',
+					// 		filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+					// 		mt: 1.5,
+					// 		'& .MuiAvatar-root': {
+					// 			width: 32,
+					// 			height: 32,
+					// 			ml: -0.5,
+					// 			mr: 1,
+					// 		},
+					// 		'&:before': {
+					// 			content: '""',
+					// 			display: 'block',
+					// 			position: 'absolute',
+					// 			top: 0,
+					// 			right: 14,
+					// 			width: 10,
+					// 			height: 10,
+					// 			bgcolor: 'background.paper',
+					// 			transform: 'translateY(-50%) rotate(45deg)',
+					// 			zIndex: 0,
+					// 		},
+					// 	},
+					// }}
+					anchorEl={languageMenuAnchorElement}
+					anchorOrigin={{
+						horizontal: 'right',
+						vertical: 'bottom', 
+					}}
+					id="account-menu"
+					onClick={() => setLanguageMenuAnchorElement(null)}
+					onClose={() => setLanguageMenuAnchorElement(null)}
+					open={Boolean(languageMenuAnchorElement)}
+					transformOrigin={{
+						horizontal: 'right',
+						vertical: 'top', 
+					}}
+				>
+					{Object.entries(Language).map(([key, value]) => (
+						<MenuItem
+							key={value}
+							onClick={() => setLanguageState(key as Language)}
+						>
+							{value}
+						</MenuItem>
+					))}
+				</Menu>
+
+				{authenticated
+					&&
+					<IconButton
+						color="inherit"
+						onClick={() => setAllowNotificationsState((prevState) => !prevState)}
+					>
+						{allowNotificationsState
+							?
+							<Tooltip title="Turn Off Notifications">
+								<NotificationsIcon />
+							</Tooltip>
+							:
+							<Tooltip title="Turn On Notifications">
+								<NotificationsOffIcon />
+							</Tooltip>
+						}
+
+					</IconButton>}
+
+				<nav>
 					<IconButton
 						color="inherit"
 						component={RRDLink}
-						to={`/profile/${userID}`}
+						to="/about"
 					>
-						<Tooltip title="My Profile">
-							<AccountCircleIcon />
+						<Tooltip title="About">
+							<InfoIcon />
 						</Tooltip>
-					</IconButton>}
-			</nav>
+					</IconButton>
 
-			{authenticated
-				?
-				<IconButton
-					color="inherit"
-					onClick={() => dispatchUserAction({ type: 'Logout' }) }
-				>
-					<Tooltip title="Logout">
-						<LogoutIcon />
-					</Tooltip>
-				</IconButton>
-				: 
-				<IconButton
-					color="inherit"
-					// onClick={() => }
-				>
-					<Tooltip title="Login">
-						<LoginIcon />
-					</Tooltip>
-				</IconButton>
-			}
-		</>
-	;
+					{authenticated && 
+						<IconButton
+							color="inherit"
+							component={RRDLink}
+							to={`/profile/${userID}`}
+						>
+							<Tooltip title="My Profile">
+								<AccountCircleIcon />
+							</Tooltip>
+						</IconButton>}
+				</nav>
+
+				{authenticated
+					?
+					<IconButton
+						color="inherit"
+						onClick={() => dispatchUserAction({ type: 'Logout' }) }
+					>
+						<Tooltip title="Logout">
+							<LogoutIcon />
+						</Tooltip>
+					</IconButton>
+					: 
+					<IconButton
+						color="inherit"
+						// onClick={() => }
+					>
+						<Tooltip title="Login">
+							<LoginIcon />
+						</Tooltip>
+					</IconButton>
+				}
+			</>
+		);
+	};
 	
 	return (
 		<>
@@ -142,7 +216,8 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 						}}
 						variant="h6"
 					>
-							Squad
+						Squad
+						<ShieldOutlinedIcon />
 					</Typography>
 					<ButtonSet />
 				</Toolbar>

@@ -6,9 +6,9 @@ import {
 import './App.css';
 
 import About from './screens/About';
+import Conversation from './screens/Conversation';
 import Navigation from './components/Navigation';
 import Profile from './screens/Profile';
-import Squad from './screens/Squad';
 
 function App() {
 	return (
@@ -25,8 +25,8 @@ function App() {
 							path="/profile/:profileID"
 						/>
 						<Route
-							element={<Squad />}
-							path="/squad/:squadID"
+							element={<Conversation />}
+							path="/conversation/:conversationID"
 						/>
 					</Routes>
 				</main>

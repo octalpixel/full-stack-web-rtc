@@ -40,15 +40,15 @@ export const UserProvider = ({ children }: { children: ReactElement }): ReactEle
 			if (userState.authenticated) {
 				socketRef.current = io();
 
-				socketRef.current.on(
-					'',
-					() => {
+				// socketRef.current.on(
+				// 	'',
+				// 	() => {
 
-					},
-				);
+				// 	},
+				// );
 
 				return () => {
-					
+					// 
 				};
 			}
 		},
