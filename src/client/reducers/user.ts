@@ -3,7 +3,6 @@ import cloneDeep from 'lodash.clonedeep';
 export interface UserState {
 	accessToken: string;
 	authenticated: boolean;
-	budRequests: BudRequest[];
 	buds: Bud[];
 	conversations: Conversation[];
 	refreshToken: string;
@@ -14,7 +13,6 @@ export interface UserState {
 export const unauthenticatedUserState: UserState = {
 	accessToken: '',
 	authenticated: false,
-	budRequests: [],
 	buds: [],
 	conversations: [],
 	refreshToken: '',
@@ -26,13 +24,6 @@ export interface Bud {
 	socketIDs: string[];
 	userID: string;
 	userName:string;
-}
-
-export interface BudRequest {
-	status: 'received' | 'sent';
-	timestamp: Date;
-	userID: string;
-	userName: string;
 }
 
 export interface Conversation {
@@ -64,38 +55,6 @@ type BudDisconnected = {
 		userID: string;
 	};
 	type: 'BudDisconnected';
-};
-
-type BudRequestAccepted = {
-	payload: {
-		userID: string;
-		userName: string;
-	};
-	type: 'BudRequestAccepted';
-};
-
-type BudRequestDeclined = {
-	payload: {
-		userID: string;
-		userName: string;
-	};
-	type: 'BudRequestDeclined';
-};
-
-type BudRequestReceived = {
-	payload: {
-		userID: string;
-		userName: string;
-	};
-	type: 'BudRequestReceived';
-};
-
-type BudRequestSent = {
-	payload: {
-		userID: string;
-		userName: string;
-	};
-	type: 'BudRequestSent';
 };
 
 type ConversationMessageDisplayed = {
@@ -136,10 +95,6 @@ type Ping = {
 
 export type UserAction = BudConnected
 	| BudDisconnected
-	| BudRequestAccepted
-	| BudRequestDeclined
-	| BudRequestReceived
-	| BudRequestSent
 	| ConversationMessageDisplayed
 	| Login
 	| Logout
@@ -176,6 +131,7 @@ export default function userReducer(
 		case 'Login': {
 			return {
 				...state,
+				authenticated: true,
 				...action.payload,
 			};
 		}

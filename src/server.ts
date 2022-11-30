@@ -40,15 +40,15 @@ const fastify = Fastify();
 	fastify.io.on(
 		'connection',
 		(socket) => {
-			socket.on(
-				'accept',
-				({ roomID }) => {
-					socket.to(roomID).emit(
-						'accept',
-						{ origin: socket.id },
-					);
-				},
-			);
+			// socket.on(
+			// 	'accept',
+			// 	({ roomID }) => {
+			// 		socket.to(roomID).emit(
+			// 			'accept',
+			// 			{ origin: socket.id },
+			// 		);
+			// 	},
+			// );
 
 			socket.on(
 				'answer',
@@ -79,20 +79,31 @@ const fastify = Fastify();
 			);
 
 			socket.on(
-				'invite',
-				({ guests }) => {
-					const roomID = uuidv4();
-					socket.join(roomID);
-					socket.to(guests).emit(
-						'invite',
-						{
-							guests,
-							origin: socket.id,
-							roomID,
-						},
-					);
+				'join-conversation',
+				({ participantIDs }) => {
+					if (participantIDs.includes(socket.data.userID)) {
+						socket.join(participantIDs);
+					} else {
+						socket._error(new Error('Access Denied.'));
+					}
 				},
 			);
+
+			// socket.on(
+			// 	'invite',
+			// 	({ guests }) => {
+			// 		const roomID = uuidv4();
+			// 		socket.join(roomID);
+			// 		socket.to(guests).emit(
+			// 			'invite',
+			// 			{
+			// 				guests,
+			// 				origin: socket.id,
+			// 				roomID,
+			// 			},
+			// 		);
+			// 	},
+			// );
 
 			socket.on(
 				'offer',
@@ -108,15 +119,15 @@ const fastify = Fastify();
 				),
 			);
 
-			socket.on(
-				'ping',
-				() => {
-					(async () => {
-						const sockets = await fastify.io.fetchSockets();
-						sockets.forEach(() => { /* do something */ });
-					})();
-				},
-			);
+			// socket.on(
+			// 	'ping',
+			// 	() => {
+			// 		(async () => {
+			// 			const sockets = await fastify.io.fetchSockets();
+			// 			sockets.forEach(() => { /* do something */ });
+			// 		})();
+			// 	},
+			// );
 		},
 	);
 

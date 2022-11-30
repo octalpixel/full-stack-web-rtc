@@ -15,13 +15,8 @@ import {
 } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+import { Language } from '../types/language';
 import { UserContext } from './user';
-
-export enum Language {
-	English = 'English',
-	Español = 'Español',
-	中文 = '中文',
-}
 
 interface PreferencesContextValue {
 	allowNotificationsState: boolean;
@@ -39,7 +34,7 @@ export const PreferencesProvider = ({ children }: { children: ReactElement }): R
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const [allowNotificationsState, setAllowNotificationsState] = useState<boolean>();
 	const [darkModeState, setDarkModeState] = useState<boolean>();
-	const [languageState, setLanguageState] = useState(Language.English);
+	const [languageState, setLanguageState] = useState<Language>('English');
 
 	useEffect(
 		() => setDarkModeState(prefersDarkMode),

@@ -1,6 +1,6 @@
 import About from './screens/About';
+import Conversation from './screens/Conversation';
 import Profile from './screens/Profile';
-import Squad from './screens/Conversation';
 
 const routes = [
 	{
@@ -8,12 +8,12 @@ const routes = [
 		path: '/',
 	},
 	{
-		component: Profile,
-		path: '/profile/:profileID',
+		component: Conversation,
+		path: '/conversation/:participantIDs',
 	},
 	{
-		component: Squad,
-		path: '/squad/:squadID',
+		component: Profile,
+		path: '/profile/:profileID',
 	},
 ];
 

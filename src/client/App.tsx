@@ -21,12 +21,12 @@ function App() {
 							path="/"
 						/>
 						<Route
-							element={<Profile />}
-							path="/profile/:profileID"
+							element={<Conversation />}
+							path="/conversation/:participantIDs"
 						/>
 						<Route
-							element={<Conversation />}
-							path="/conversation/:conversationID"
+							element={<Profile />}
+							path="/profile/:profileID"
 						/>
 					</Routes>
 				</main>

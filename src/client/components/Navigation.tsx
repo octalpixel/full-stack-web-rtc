@@ -22,11 +22,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import {
-	Language,
-	PreferencesContext,
-} from '../contexts/preferences';
+import { PreferencesContext } from '../contexts/preferences';
 import { UserContext } from '../contexts/user';
+import { language } from '../types/language';
+import multilingualDictionary from '../constants/multilingual-dictionary';
 
 const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 	const {
@@ -54,58 +53,33 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 					onClick={() => setDarkModeState((prevState) => !prevState)}
 				>
 					{darkModeState
-						? 
-						<Tooltip title="Light Mode">
-							<LightModeIcon />
-						</Tooltip>
-						:
-						<Tooltip title="Dark Mode">
-							<NightlightRoundIcon />
-						</Tooltip>
-					}
+						? (
+							<Tooltip title={multilingualDictionary.LightMode[languageState]}>
+								<NightlightRoundIcon />
+							</Tooltip>
+						)
+						: (
+							<Tooltip title={multilingualDictionary.DarkMode[languageState]}>
+								<LightModeIcon />
+							</Tooltip>
+						)}
 				</IconButton>
 
 				<IconButton
 					color="inherit"
 					onClick={({ currentTarget }) => setLanguageMenuAnchorElement(currentTarget)}
 				>
-					<Tooltip title="Language">
+					<Tooltip title={multilingualDictionary.Language[languageState]}>
 						<LanguageIcon />
 					</Tooltip>
 				</IconButton>
 				<Menu
-					// PaperProps={{
-					// 	elevation: 0,
-					// 	sx: {
-					// 		overflow: 'visible',
-					// 		filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-					// 		mt: 1.5,
-					// 		'& .MuiAvatar-root': {
-					// 			width: 32,
-					// 			height: 32,
-					// 			ml: -0.5,
-					// 			mr: 1,
-					// 		},
-					// 		'&:before': {
-					// 			content: '""',
-					// 			display: 'block',
-					// 			position: 'absolute',
-					// 			top: 0,
-					// 			right: 14,
-					// 			width: 10,
-					// 			height: 10,
-					// 			bgcolor: 'background.paper',
-					// 			transform: 'translateY(-50%) rotate(45deg)',
-					// 			zIndex: 0,
-					// 		},
-					// 	},
-					// }}
 					anchorEl={languageMenuAnchorElement}
 					anchorOrigin={{
 						horizontal: 'right',
 						vertical: 'bottom', 
 					}}
-					id="account-menu"
+					id="language-menu"
 					onClick={() => setLanguageMenuAnchorElement(null)}
 					onClose={() => setLanguageMenuAnchorElement(null)}
 					open={Boolean(languageMenuAnchorElement)}
@@ -114,10 +88,13 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 						vertical: 'top', 
 					}}
 				>
-					{Object.entries(Language).map(([key, value]) => (
+					{language.map((value) => (
 						<MenuItem
+							// className={`${darkModeState
+							// 	? 'dark-mode '
+							// 	: ''}language-menu-item`}
 							key={value}
-							onClick={() => setLanguageState(key as Language)}
+							onClick={() => setLanguageState(value)}
 						>
 							{value}
 						</MenuItem>
@@ -132,11 +109,11 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 					>
 						{allowNotificationsState
 							?
-							<Tooltip title="Turn Off Notifications">
+							<Tooltip title={multilingualDictionary.DisallowNotifications[languageState]}>
 								<NotificationsIcon />
 							</Tooltip>
 							:
-							<Tooltip title="Turn On Notifications">
+							<Tooltip title={multilingualDictionary.AllowNotifications[languageState]}>
 								<NotificationsOffIcon />
 							</Tooltip>
 						}
@@ -149,7 +126,7 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 						component={RRDLink}
 						to="/about"
 					>
-						<Tooltip title="About">
+						<Tooltip title={multilingualDictionary.About[languageState]}>
 							<InfoIcon />
 						</Tooltip>
 					</IconButton>
@@ -160,7 +137,7 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 							component={RRDLink}
 							to={`/profile/${userID}`}
 						>
-							<Tooltip title="My Profile">
+							<Tooltip title={multilingualDictionary.MyProfile[languageState]}>
 								<AccountCircleIcon />
 							</Tooltip>
 						</IconButton>}
@@ -172,16 +149,25 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 						color="inherit"
 						onClick={() => dispatchUserAction({ type: 'Logout' }) }
 					>
-						<Tooltip title="Logout">
+						<Tooltip title={multilingualDictionary.Logout[languageState]}>
 							<LogoutIcon />
 						</Tooltip>
 					</IconButton>
 					: 
 					<IconButton
 						color="inherit"
-						// onClick={() => }
+						// onClick={() => setAuthFormDisplayed(true)}
+						onClick={() => dispatchUserAction({
+							payload: {
+								accessToken: 'abcdef',
+								refreshToken: 'ghijkl',
+								userID: '123',
+								userName: 'Casey',
+							},
+							type: 'Login',
+						})}
 					>
-						<Tooltip title="Login">
+						<Tooltip title={multilingualDictionary.Login[languageState]}>
 							<LoginIcon />
 						</Tooltip>
 					</IconButton>
@@ -216,8 +202,8 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 						}}
 						variant="h6"
 					>
-						Squad
 						<ShieldOutlinedIcon />
+						{multilingualDictionary.AppName[languageState]}
 					</Typography>
 					<ButtonSet />
 				</Toolbar>

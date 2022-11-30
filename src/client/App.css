@@ -12,3 +12,11 @@ main {
 	padding: 8px;
 	row-gap: 8px;
 }
+
+/* .language-menu-item:not(:last-of-type) {
+	border-bottom: 1px solid black;
+}
+
+.dark-mode.language-menu-item:not(:last-of-type) {
+	border-bottom: 1px solid white;
+} */
