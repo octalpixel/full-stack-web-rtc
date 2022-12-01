@@ -129,6 +129,14 @@ export default function userReducer(
 			return clonedState;
 		}
 		case 'Login': {
+			localStorage.setItem(
+				'accessToken',
+				action.payload.accessToken,
+			);
+			localStorage.setItem(
+				'refreshToken',
+				action.payload.refreshToken,
+			);
 			return {
 				...state,
 				authenticated: true,
@@ -136,7 +144,8 @@ export default function userReducer(
 			};
 		}
 		case 'Logout': {
-
+			localStorage.removeItem('accessToken');
+			localStorage.removeItem('refreshToken');
 			return unauthenticatedUserState;
 		}
 		case 'BudConnected': {

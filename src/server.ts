@@ -1,8 +1,8 @@
 import Fastify from 'fastify';
-
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import FastifyVite from '@fastify/vite';
+import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
 import { join } from 'path';
 import jwt from 'jsonwebtoken';
 import { renderToString } from 'react-dom/server';
@@ -10,9 +10,14 @@ import socketioServer from 'fastify-socket.io';
 import { stringify } from 'devalue';
 import { v4 as uuidv4 } from 'uuid';
 
+import { appRouter } from './routers';
+import { createContext } from './context';
+import mongoClient from './mongo-client';
+
 const fastify = Fastify();
 
 (async () => {
+	await mongoClient.connect();
 	await fastify.register(socketioServer);
 
 	fastify.io.use(
@@ -128,6 +133,17 @@ const fastify = Fastify();
 			// 		})();
 			// 	},
 			// );
+		},
+	);
+
+	fastify.register(
+		fastifyTRPCPlugin,
+		{
+			prefix: '/trpc',
+			trpcOptions: {
+				createContext,
+				router: appRouter,
+			},
 		},
 	);
 

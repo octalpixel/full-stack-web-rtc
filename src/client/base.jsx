@@ -7,8 +7,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { StaticRouter } from 'react-router-dom/server';
 
 import App from './App';
-import { PreferencesProvider } from './contexts/preferences';
-import { UserProvider } from './contexts/user';
 
 const Router = import.meta.env.SSR
 	? StaticRouter
@@ -19,11 +17,7 @@ export function createApp(ctx, url) {
 		<StrictMode>
 			<Suspense>
 				<Router location={url}>
-					<UserProvider>
-						<PreferencesProvider>
-							<App />
-						</PreferencesProvider>
-					</UserProvider>
+					<App />
 				</Router>
 			</Suspense>
 		</StrictMode>

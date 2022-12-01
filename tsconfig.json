@@ -16,6 +16,6 @@
     "noEmit": true,
     "jsx": "react-jsx",
   },
-  "include": ["src", "node_modules/@fastify/vite/types/types.d.ts"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
