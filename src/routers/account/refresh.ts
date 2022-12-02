@@ -4,9 +4,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
-import generateTokens from '../../utils/generate-tokens';
-import mongoClient from '../../mongo-client';
-import { publicProcedure } from '../../trpc';
+import generateTokens from '../../utils/generate-tokens.js';
+import mongoClient from '../../mongo-client.js';
+import { publicProcedure } from '../../trpc.js';
 
 const refresh = publicProcedure
 	.input(z.string())

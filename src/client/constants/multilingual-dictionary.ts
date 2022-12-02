@@ -21,6 +21,11 @@ const multilingualDictionary: MultilingualDictionary = {
 		Español: 'Pelotón',
 		中文: '伙伴',
 	},
+	CancelLogout: {
+		English: 'Psych!  JK, Don\'t Log Me Out!',
+		Español: '',
+		中文: '',
+	},
 	DarkMode: {
 		English: 'Switch to Dark Mode',
 		Español: '',
@@ -48,6 +53,16 @@ const multilingualDictionary: MultilingualDictionary = {
 	},
 	Logout: {
 		English: 'Logout',
+		Español: '',
+		中文: '',
+	},
+	LogoutAllDevices: {
+		English: 'Logout of All Devices',
+		Español: '',
+		中文: '',
+	},
+	LogoutThisDevice: {
+		English: 'Logout of This Device Only',
 		Español: '',
 		中文: '',
 	},

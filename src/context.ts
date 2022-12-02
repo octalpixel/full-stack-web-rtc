@@ -6,6 +6,7 @@ export function createContext({
 	req,
 	res, 
 }: CreateFastifyContextOptions) {
+	console.log(req.headers);
 	if ('authorization' in req.headers) {
 		const token = req
 			.headers

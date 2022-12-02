@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import FastifyEnv from '@fastify/env';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import FastifyVite from '@fastify/vite';
@@ -8,15 +9,55 @@ import jwt from 'jsonwebtoken';
 import { renderToString } from 'react-dom/server';
 import socketioServer from 'fastify-socket.io';
 import { stringify } from 'devalue';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
-import { appRouter } from './routers';
-import { createContext } from './context';
-import mongoClient from './mongo-client';
+import { appRouter } from './routers/index.js';
+import { createContext } from './context.js';
+import mongoClient from './mongo-client.js';
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    config: {
+      JWT_ACCESS_SECRET: string,
+      JWT_PASSWORD_RESET_SECRET: string,
+      JWT_REFRESH_SECRET: string,
+      SALT_ROUNDS: string,
+      SENDGRID_API_KEY: string,
+    };
+  }
+}
 
 const fastify = Fastify();
 
+const envOptions = {
+	// confKey: 'config',
+	// data: process.env,
+	dotenv: true,
+	schema: {
+		properties: {
+			JWT_ACCESS_SECRET: { type: 'string' },
+			JWT_PASSWORD_RESET_SECRET: { type: 'string' },
+			JWT_REFRESH_SECRET: { type: 'string' },
+			SALT_ROUNDS: { type: 'string' },
+			SENDGRID_API_KEY: { type: 'string' },
+		},
+		required: [
+			'JWT_ACCESS_SECRET',
+			'JWT_PASSWORD_RESET_SECRET',
+			'JWT_REFRESH_SECRET',
+			'SALT_ROUNDS',
+			'SENDGRID_API_KEY',
+		],
+		type: 'object',
+	},
+};
+
 (async () => {
+	fastify.register(
+		FastifyEnv,
+		envOptions,
+	);
+	await fastify.after();
 	await mongoClient.connect();
 	await fastify.register(socketioServer);
 

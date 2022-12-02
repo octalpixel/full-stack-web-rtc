@@ -13,6 +13,12 @@ main {
 	row-gap: 8px;
 }
 
+.auth-form-tab {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+}
+
 /* .language-menu-item:not(:last-of-type) {
 	border-bottom: 1px solid black;
 }

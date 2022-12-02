@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import {
 	QueryClient,
@@ -27,7 +27,11 @@ function App() {
 			links: [
 				httpBatchLink({
 					headers() {
-						return { authorization: localStorage.getItem('accessToken') ?? undefined };
+						return {
+							authorization: localStorage.getItem('accessToken')
+								? `Bearer ${localStorage.getItem('accessToken')}`
+								: undefined, 
+						};
 					},
 					url: 'http://localhost:6969/trpc',
 				}),
@@ -35,37 +39,35 @@ function App() {
 		}));
 
 	return (
-		<>
-			<UserProvider>
-				<trpc.Provider
-					client={trpcClient}
-					queryClient={queryClient}
-				>
-					<QueryClientProvider client={queryClient}>
-						<PreferencesProvider>
-							<Navigation>
-								<main>
-									<Routes>
-										<Route
-											element={<About />}
-											path="/"
-										/>
-										<Route
-											element={<Conversation />}
-											path="/conversation/:participantIDs"
-										/>
-										<Route
-											element={<Profile />}
-											path="/profile/:profileID"
-										/>
-									</Routes>
-								</main>
-							</Navigation>
-						</PreferencesProvider>
-					</QueryClientProvider>
-				</trpc.Provider>
-			</UserProvider>
-		</>
+		<trpc.Provider
+			client={trpcClient}
+			queryClient={queryClient}
+		>
+			<QueryClientProvider client={queryClient}>
+				<UserProvider>
+					<PreferencesProvider>
+						<Navigation>
+							<main>
+								<Routes>
+									<Route
+										element={<About />}
+										path="/"
+									/>
+									<Route
+										element={<Conversation />}
+										path="/conversation/:participantIDs"
+									/>
+									<Route
+										element={<Profile />}
+										path="/profile/:profileID"
+									/>
+								</Routes>
+							</main>
+						</Navigation>
+					</PreferencesProvider>
+				</UserProvider>
+			</QueryClientProvider>
+		</trpc.Provider>
 	);
 }
 

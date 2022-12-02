@@ -2,13 +2,16 @@ import {
 	Dispatch,
 	MutableRefObject,
 	ReactElement,
+	SetStateAction,
 	createContext,
 	useEffect,
 	useReducer,
 	useRef,
+	useState,
 } from 'react';
 
 import io, { Socket } from 'socket.io-client';
+import AuthForm from '../components/AuthForm';
 
 import userReducer, {
 	UserAction,
@@ -18,12 +21,14 @@ import userReducer, {
 
 interface UserContextValue {
 	dispatchUserAction: Dispatch<UserAction>;
+	setAuthFormDisplayed: Dispatch<SetStateAction<boolean>>;
 	socketRef: MutableRefObject<Socket | undefined>;
 	userState: UserState;
 }
 
 export const UserContext = createContext<UserContextValue>({
-	dispatchUserAction: (() => { /* void */ }) as Dispatch<UserAction>,
+	dispatchUserAction: () => { /* void */ },
+	setAuthFormDisplayed: () => { /* void */ },
 	socketRef: undefined as unknown as MutableRefObject<Socket | undefined>,
 	userState: unauthenticatedUserState,
 });
@@ -34,6 +39,7 @@ export const UserProvider = ({ children }: { children: ReactElement }): ReactEle
 		unauthenticatedUserState,
 	);
 	const socketRef = useRef<Socket>();
+	const [authFormDisplayed, setAuthFormDisplayed] = useState(false);
 
 	useEffect(
 		() => {
@@ -59,10 +65,15 @@ export const UserProvider = ({ children }: { children: ReactElement }): ReactEle
 		<UserContext.Provider
 			value={{
 				dispatchUserAction,
+				setAuthFormDisplayed,
 				socketRef,
 				userState,
 			}}
 		>
+			<AuthForm
+				open={authFormDisplayed}
+				toggleOpen={() => setAuthFormDisplayed((prevState) => !prevState)}
+			/>
 			{children}
 		</UserContext.Provider>
 	);

@@ -1,14 +1,18 @@
-import {
+import React, {
 	useContext,
 	useState,
 } from 'react';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AppBar from '@mui/material/AppBar';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 import LanguageIcon from '@mui/icons-material/Language';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Menu from '@mui/material/Menu';
@@ -26,10 +30,12 @@ import { PreferencesContext } from '../contexts/preferences';
 import { UserContext } from '../contexts/user';
 import { language } from '../types/language';
 import multilingualDictionary from '../constants/multilingual-dictionary';
+import { trpc } from '../hooks/trpc';
 
 const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 	const {
 		dispatchUserAction,
+		setAuthFormDisplayed,
 		userState: {
 			authenticated,
 			userID,
@@ -43,6 +49,9 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 		setDarkModeState,
 		setLanguageState,
 	} = useContext(PreferencesContext);
+	const logout = trpc.account.logout.useMutation();
+	const logoutAll = trpc.account.logoutAll.useMutation();
+	const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
 	const ButtonSet = () => {
 		const [languageMenuAnchorElement, setLanguageMenuAnchorElement] = useState<HTMLButtonElement | null>(null);
@@ -90,9 +99,6 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 				>
 					{language.map((value) => (
 						<MenuItem
-							// className={`${darkModeState
-							// 	? 'dark-mode '
-							// 	: ''}language-menu-item`}
 							key={value}
 							onClick={() => setLanguageState(value)}
 						>
@@ -147,7 +153,7 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 					?
 					<IconButton
 						color="inherit"
-						onClick={() => dispatchUserAction({ type: 'Logout' }) }
+						onClick={() => setLogoutDialogOpen((prevState) => !prevState)}
 					>
 						<Tooltip title={multilingualDictionary.Logout[languageState]}>
 							<LogoutIcon />
@@ -156,16 +162,7 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 					: 
 					<IconButton
 						color="inherit"
-						// onClick={() => setAuthFormDisplayed(true)}
-						onClick={() => dispatchUserAction({
-							payload: {
-								accessToken: 'abcdef',
-								refreshToken: 'ghijkl',
-								userID: '123',
-								userName: 'Casey',
-							},
-							type: 'Login',
-						})}
+						onClick={() => setAuthFormDisplayed(true)}
 					>
 						<Tooltip title={multilingualDictionary.Login[languageState]}>
 							<LoginIcon />
@@ -178,6 +175,55 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 	
 	return (
 		<>
+			<Dialog
+				onClose={() => setLogoutDialogOpen((prevState) => !prevState)}
+				open={authenticated && logoutDialogOpen}
+			>
+				<DialogTitle>
+					Choose Logout Method
+				</DialogTitle>
+				<List>
+					<ListItem
+						button
+						onClick={() => {
+							logout.mutate();
+							setTimeout(
+								() => dispatchUserAction({ type: 'Logout' }),
+								0,
+							);
+						}}
+					>
+						<Typography variant="button">
+							{multilingualDictionary.LogoutThisDevice[languageState]}
+						</Typography>
+					</ListItem>
+
+					<ListItem
+						button
+						onClick={() => {
+							logoutAll.mutate();
+							setTimeout(
+								() => dispatchUserAction({ type: 'Logout' }),
+								0,
+							);
+						}}
+					>
+						<Typography variant="button">
+							{multilingualDictionary.LogoutAllDevices[languageState]}
+						</Typography>
+					</ListItem>
+
+					<ListItem
+						button
+						onClick={() => setLogoutDialogOpen((prevState) => !prevState)}
+					>
+						<Typography variant="button">
+							{multilingualDictionary.CancelLogout[languageState]}
+						</Typography>
+					</ListItem>
+				</List>
+			</Dialog>
+
 			<AppBar
 				position="sticky"
 				sx={{

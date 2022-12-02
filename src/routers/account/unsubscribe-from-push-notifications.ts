@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { TRPCError } from '@trpc/server';
 
-import mongoClient from '../../mongo-client';
-import { publicProcedure } from '../../trpc';
+import mongoClient from '../../mongo-client.js';
+import { publicProcedure } from '../../trpc.js';
 
 const unsubscribeFromPushNotifications = publicProcedure
 	.mutation(

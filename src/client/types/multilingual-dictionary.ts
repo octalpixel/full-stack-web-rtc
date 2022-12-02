@@ -9,6 +9,8 @@ interface MultilingualDictionary {
 	AllowNotifications: Record<Language, string>;
 	/** A general term for a group of loyal friends, possibly sharing a common goal */
 	AppName: Record<Language, string>;
+	/** Button text to cancel logging out and close the logout dialog */
+	CancelLogout: Record<Language, string>;
 	/** Tooltip text for the icon button to switch the app into dark mode */
 	DarkMode: Record<Language, string>;
 	/** Tooltip text for the icon button to turn off push notifications */
@@ -21,6 +23,10 @@ interface MultilingualDictionary {
 	Login: Record<Language, string>;
 	/** Tooltip text for the icon button which will log the user out of the application */
 	Logout: Record<Language, string>;
+	/** Button text to log the user out of all devices currently logged in to their account */
+	LogoutAllDevices: Record<Language, string>;
+	/** Button text to log the user out of this device only */
+	LogoutThisDevice: Record<Language, string>;
 	/** Tooltip text for the icon button navigation link to the page with information about the currently logged in user */
 	MyProfile: Record<Language, string>;
 }

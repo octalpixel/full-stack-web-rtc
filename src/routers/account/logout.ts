@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
-import mongoClient from '../../mongo-client';
-import { publicProcedure } from '../../trpc';
+import mongoClient from '../../mongo-client.js';
+import { publicProcedure } from '../../trpc.js';
 
 const logout = publicProcedure
 	.mutation(

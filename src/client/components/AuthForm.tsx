@@ -1,16 +1,24 @@
-import { useState } from 'react';
+import {
+	FormEventHandler,
+	useContext,
+	useEffect,
+	useState,
+} from 'react';
 
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import TextField from '@mui/material/TextField';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
+import { UserContext } from '../contexts/user';
 import { trpc } from '../hooks/trpc';
 
 interface AuthFormProps {
@@ -22,25 +30,81 @@ export default function AuthForm({
 	open,
 	toggleOpen,
 }: AuthFormProps): JSX.Element {
+	const { dispatchUserAction } = useContext(UserContext);
 	const login = trpc.account.login.useMutation();
 	const register = trpc.account.register.useMutation();
-
+	const requestPasswordReset = trpc.account.requestPasswordReset.useMutation();
 	const [selectedTab, setSelectedTab] = useState(0);
 	const [emailInput, setEmailInput] = useState('');
 	const [nameInput, setNameInput] = useState('');
 	const [passwordInput, setPasswordInput] = useState('');
 	const [passwordVisible, setPasswordVisible] = useState(false);
 
+	const submitForm: FormEventHandler = (event) => {
+		event.preventDefault();
+
+		if (selectedTab === 0) {
+			login.mutate({
+				email: emailInput,
+				password: passwordInput,
+			});
+		} else if (selectedTab === 1) {
+			requestPasswordReset.mutate({ email: emailInput });
+		} else if (selectedTab === 2) {
+			register.mutate({
+				email: emailInput,
+				name: nameInput,
+				password: passwordInput,
+			});
+		} else {
+			throw new Error('Invalid tab number!');
+		}
+	};
+
+	useEffect(
+		() => {
+			if (login.isSuccess) {
+				dispatchUserAction({
+					payload: {
+						accessToken: login.data.accessToken,
+						refreshToken: login.data.refreshToken,
+						userID: login.data.userID,
+						userName: login.data.userName,
+					},
+					type: 'Login',
+				});
+				toggleOpen();
+			} else if (register.isSuccess) {
+				dispatchUserAction({
+					payload: {
+						accessToken: register.data.accessToken,
+						refreshToken: register.data.refreshToken,
+						userID: register.data.userID,
+						userName: register.data.userName,
+					},
+					type: 'Login',
+				});
+				toggleOpen();
+			}
+		},
+		[login.isSuccess, register.isSuccess],
+	);
+
 	return (
 		<Dialog
 			onClose={toggleOpen}
 			open={open}
 		>
-			{login.isLoading || register.isLoading
+			{requestPasswordReset.isSuccess
 				? (
-					<DialogContent className={classes.loadingSpinnerContainer}>
-						<LoadingSpinner />
-					</DialogContent>
+					<>
+						<DialogTitle>
+							Password Reset Link Sent
+						</DialogTitle>
+						<DialogContent>
+							Check your email address.
+						</DialogContent>
+					</>
 				)
 				: (
 					<form onSubmit={submitForm}>
@@ -73,7 +137,7 @@ export default function AuthForm({
 							<div
 								aria-labelledby="login-tab"
 								className={selectedTab === 0
-									? classes.activeTab
+									? 'auth-form-tab'
 									: undefined}
 								hidden={selectedTab !== 0}
 								id="authentication-options-tabpanel-0"
@@ -123,7 +187,7 @@ export default function AuthForm({
 							<div
 								aria-labelledby="password-reset-tab"
 								className={selectedTab === 1
-									? classes.activeTab
+									? 'auth-form-tab'
 									: undefined}
 								hidden={selectedTab !== 1}
 								id="authentication-options-tabpanel-1"
@@ -145,7 +209,7 @@ export default function AuthForm({
 							<div
 								aria-labelledby="register-tab"
 								className={selectedTab === 2
-									? classes.activeTab
+									? 'auth-form-tab'
 									: undefined}
 								hidden={selectedTab !== 2}
 								id="authentication-options-tabpanel-2"
@@ -204,7 +268,12 @@ export default function AuthForm({
 							</div>
 						</DialogContent>
 						<DialogActions>
-							<Button type="submit">Submit</Button>
+							<LoadingButton
+								loading={login.isLoading || register.isLoading || requestPasswordReset.isLoading}
+								type="submit"
+							>
+								Submit
+							</LoadingButton>
 						</DialogActions>
 					</form>
 				)}

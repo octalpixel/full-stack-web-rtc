@@ -3,9 +3,9 @@ import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 
-import generateTokens from '../../utils/generate-tokens';
-import mongoClient from '../../mongo-client';
-import { publicProcedure } from '../../trpc';
+import generateTokens from '../../utils/generate-tokens.js';
+import mongoClient from '../../mongo-client.js';
+import { publicProcedure } from '../../trpc.js';
 
 const login = publicProcedure
 	.input(
@@ -84,8 +84,8 @@ const login = publicProcedure
 				return {
 					accessToken,
 					refreshToken,
-					userID: accounts[0]._id.toHexString(),
-					userName: accounts[0].name,
+					userID: accounts[0]._id.toHexString() as string,
+					userName: accounts[0].name as string,
 				};
 			}
 

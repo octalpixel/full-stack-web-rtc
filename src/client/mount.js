@@ -4,7 +4,7 @@ import { createApp } from './base';
 
 hydrateRoot(
 	// eslint-disable-next-line no-undef
-	document.querySelector('body'),
+	document.querySelector('#root'),
 	// eslint-disable-next-line no-undef
 	createApp(window.hydration),
 );

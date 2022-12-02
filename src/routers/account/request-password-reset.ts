@@ -2,9 +2,9 @@ import { TRPCError } from '@trpc/server';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
-import mongoClient from '../../mongo-client';
-import { publicProcedure } from '../../trpc';
-import sgMail from '../../sendgrid-mail';
+import mongoClient from '../../mongo-client.js';
+import { publicProcedure } from '../../trpc.js';
+import sgMail from '../../sendgrid-mail.js';
 
 const requestPasswordReset = publicProcedure
 	.input(z.object({ email: z.string() }))
