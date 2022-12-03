@@ -44,21 +44,18 @@ export const UserProvider = ({ children }: { children: ReactElement }): ReactEle
 	useEffect(
 		() => {
 			if (userState.authenticated) {
-				socketRef.current = io();
-
-				// socketRef.current.on(
-				// 	'',
-				// 	() => {
-
-				// 	},
-				// );
+				socketRef.current = io({
+					auth(cb){
+						cb({ token: userState.accessToken }); 
+					}, 
+				});
 
 				return () => {
-					// 
+					socketRef.current?.disconnect();
 				};
 			}
 		},
-		[userState.authenticated],
+		[userState.accessToken, userState.authenticated],
 	);
 
 	return (
