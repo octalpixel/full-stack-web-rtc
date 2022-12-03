@@ -9,9 +9,15 @@ import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
+import Peer from '../components/Peer';
 import { PreferencesContext } from '../contexts/preferences';
 import { UserContext } from '../contexts/user';
 import multilingualDictionary from '../constants/multilingual-dictionary';
+
+interface PeerData {
+	socketID: string;
+	socketName: string;
+}
 
 const Conversation = (): JSX.Element => {
 	const { languageState } = useContext(PreferencesContext);
@@ -21,7 +27,7 @@ const Conversation = (): JSX.Element => {
 	} = useContext(UserContext);
 	const { participantIDs } = useParams();
 	const streamRef = useRef<MediaStream>();
-	// const [peersState, setPeersState] = useState
+	const [peersState, setPeersState] = useState<PeerData[]>([]);
 
 	useEffect(
 		() => {
@@ -41,8 +47,36 @@ const Conversation = (): JSX.Element => {
 				{ participantIDs },
 			);
 
+			socketRef.current?.on(
+				'conversation-joined',
+				({ peers }: { peers: PeerData[] }) => setPeersState(peers.sort(
+					(a, b) => a.socketName.localeCompare(b.socketName),
+				)),
+			);
+
+			socketRef.current?.on(
+				'peer-disconnected',
+				({ peer }: { peer: PeerData }) => {
+					setPeersState(
+						(prevState) => {
+							return prevState.filter(
+								(p) => p.socketID !== peer.socketID,
+							);
+						},
+					);
+				},
+			);
+
+			socketRef.current?.on(
+				'peer-joined',
+				({ peer }: { peer: PeerData }) => setPeersState((prevState) => [...prevState, peer].sort(
+					(a, b) => a.socketName.localeCompare(b.socketName),
+				)),
+			);
+
 			return () => {
-				socketRef.current?.off('join-conversation');
+				socketRef.current?.off('conversation-joined');
+				socketRef.current?.off('peer-joined');
 			};
 		},
 		[participantIDs],
@@ -60,7 +94,16 @@ const Conversation = (): JSX.Element => {
 
 	return (
 		<Paper>
-			{}
+			{peersState.map(
+				(peer) => (
+					<Peer
+						key={peer.socketID}
+						socketID={peer.socketID}
+						socketName={peer.socketName}
+						streamRef={streamRef}
+					/>
+				),
+			)}
 		</Paper>
 	);
 };

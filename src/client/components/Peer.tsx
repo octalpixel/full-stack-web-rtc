@@ -12,68 +12,64 @@ import iceServers from '../constants/ice-servers';
 
 interface PeerProps {
 	socketID: string;
-	streamRef: MutableRefObject<MediaStream>;
+	socketName: string;
+	streamRef: MutableRefObject<MediaStream | undefined>;
 }
 
 const Peer = ({
 	socketID,
+	socketName,
 	streamRef,
 }: PeerProps): JSX.Element => {
 	const { socketRef } = useContext(UserContext);
-	const { conversationID } = useParams();
+	const { participantIDs } = useParams();
 	const peerRef = useRef<RTCPeerConnection>();
 	const videoRef = useRef<HTMLVideoElement>(null);
 
 	useEffect(
 		() => {
-			(async () => {
-				try {
-					peerRef.current = new RTCPeerConnection(iceServers);
-					streamRef.current
-						?.getTracks()
-						.forEach(
-							(track) => {
-								peerRef.current?.addTrack(
-									track,
-									streamRef.current as MediaStream,
-								);
-							},
+			peerRef.current = new RTCPeerConnection(iceServers);
+			streamRef.current
+				?.getTracks()
+				.forEach(
+					(track) => {
+						peerRef.current?.addTrack(
+							track,
+							streamRef.current as MediaStream,
 						);
+					},
+				);
 
-					peerRef.current.onicecandidate = (rtcPeerConnectionIceEvent) => {
-						if (rtcPeerConnectionIceEvent.candidate) {
-							socketRef.current?.emit(
-								'ice-candidate',
-								{
-									candidate: rtcPeerConnectionIceEvent.candidate,
-									conversationID,
-								},
-							);
-						}
-					};
-
-					peerRef.current.onnegotiationneeded = () => {
-						(async () => {
-							const offer = await peerRef.current?.createOffer();
-							await peerRef.current?.setLocalDescription(offer);
-							socketRef.current?.emit(
-								'offer',
-								{
-									conversationID,
-									sdp: peerRef.current?.localDescription,
-								},
-							);
-						})();
-					};
-
-					peerRef.current.ontrack = (rtcTrackEvent) => {
-						const { streams: [stream] } = rtcTrackEvent;
-						if (videoRef.current) videoRef.current.srcObject = stream;
-					};
-				} catch (error) {
-					console.log(error);
+			peerRef.current.onicecandidate = (rtcPeerConnectionIceEvent) => {
+				if (rtcPeerConnectionIceEvent.candidate) {
+					socketRef.current?.emit(
+						'ice-candidate',
+						{
+							candidate: rtcPeerConnectionIceEvent.candidate,
+							participantIDs,
+						},
+					);
 				}
-			})();
+			};
+
+			peerRef.current.onnegotiationneeded = () => {
+				(async () => {
+					const offer = await peerRef.current?.createOffer();
+					await peerRef.current?.setLocalDescription(offer);
+					socketRef.current?.emit(
+						'offer',
+						{
+							participantIDs,
+							sdp: peerRef.current?.localDescription,
+						},
+					);
+				})();
+			};
+
+			peerRef.current.ontrack = (rtcTrackEvent) => {
+				const { streams: [stream] } = rtcTrackEvent;
+				if (videoRef.current) videoRef.current.srcObject = stream;
+			};
 
 			socketRef.current?.on(
 				`${socketID}-answer`,
@@ -118,7 +114,7 @@ const Peer = ({
 							socketRef.current?.emit(
 								'answer',
 								{
-									conversationID,
+									participantIDs,
 									sdp: peerRef.current?.localDescription,
 								},
 							);

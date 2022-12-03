@@ -9,7 +9,6 @@ import jwt from 'jsonwebtoken';
 import { renderToString } from 'react-dom/server';
 import socketioServer from 'fastify-socket.io';
 import { stringify } from 'devalue';
-// import { v4 as uuidv4 } from 'uuid';
 
 import { appRouter } from './routers/index.js';
 import { createContext } from './context.js';
@@ -86,82 +85,87 @@ const envOptions = {
 	fastify.io.on(
 		'connection',
 		(socket) => {
-			// socket.on(
-			// 	'accept',
-			// 	({ roomID }) => {
-			// 		socket.to(roomID).emit(
-			// 			'accept',
-			// 			{ origin: socket.id },
-			// 		);
-			// 	},
-			// );
-
 			socket.on(
 				'answer',
 				({
+					participantIDs,
 					sdp,
-					target,
-				}) => socket.to(target).emit(
-					'answer',
-					{
-						origin: socket.id,
-						sdp,
-					},
+				}) => socket.to(participantIDs).emit(
+					`${socket.id}-answer`,
+					{ sdp },
 				),
+			);
+
+			socket.on(
+				'disconnecting',
+				() => {
+					socket.rooms.forEach(
+						(room) => socket.to(room).emit(
+							'peer-disconnected',
+							{
+								peer: {
+									socketID: socket.id,
+									socketName: socket.data.userName,
+								},
+							},
+						),
+					);
+				},
 			);
 
 			socket.on(
 				'ice-candidate',
 				({
+					participantIDs,
 					candidate,
-					target,
-				}) => socket.to(target).emit(
-					'ice-candidate',
-					{
-						candidate,
-						origin: socket.id,
-					},
+				}) => socket.to(participantIDs).emit(
+					`${socket.id}-ice-candidate`,
+					{ candidate },
 				),
 			);
 
 			socket.on(
 				'join-conversation',
 				({ participantIDs }) => {
+					// ensure only invited users can join the conversation
 					if (participantIDs.includes(socket.data.userID)) {
 						socket.join(participantIDs);
+						socket.to(participantIDs).emit(
+							'peer-joined',
+							{
+								peer: {
+									socketID: socket.id,
+									socketName: socket.data.userName,
+								},
+							},
+						);
+						(async () => {
+							const peers = await fastify.io.in(participantIDs).fetchSockets();
+							fastify.io.to(socket.id).emit(
+								'conversation-joined',
+								{
+									// let the newly connected socket know who else has joined the conversation
+									peers: peers.map((peer) => ({
+										socketID: peer.id,
+										socketName: peer.data.userName,
+									})), 
+								},
+							);
+						})();
 					} else {
 						socket._error(new Error('Access Denied.'));
 					}
 				},
 			);
 
-			// socket.on(
-			// 	'invite',
-			// 	({ guests }) => {
-			// 		const roomID = uuidv4();
-			// 		socket.join(roomID);
-			// 		socket.to(guests).emit(
-			// 			'invite',
-			// 			{
-			// 				guests,
-			// 				origin: socket.id,
-			// 				roomID,
-			// 			},
-			// 		);
-			// 	},
-			// );
-
 			socket.on(
 				'offer',
 				({
+					participantIDs,
 					sdp,
-					target,
-				}) => socket.to(target).emit(
-					'offer',
-					{
-						origin: socket.id,
-						sdp,
-					},
+				}) => socket.to(participantIDs).emit(
+					`${socket.id}-offer`,
+					{ sdp },
 				),
 			);
 
