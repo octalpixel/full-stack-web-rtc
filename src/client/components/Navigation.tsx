@@ -1,5 +1,6 @@
 import React, {
 	useContext,
+	useEffect,
 	useState,
 } from 'react';
 
@@ -27,6 +28,20 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 	const logout = trpc.account.logout.useMutation();
 	const logoutAll = trpc.account.logoutAll.useMutation();
 	const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
+	useEffect(
+		() => {
+			if (logout.isSuccess) dispatchUserAction({ type: 'Logout' });
+		},
+		[dispatchUserAction, logout.isSuccess],
+	);
+
+	useEffect(
+		() => {
+			if (logoutAll.isSuccess) dispatchUserAction({ type: 'Logout' });
+		},
+		[dispatchUserAction, logoutAll.isSuccess],
+	);
 	
 	return (
 		<>
@@ -40,13 +55,7 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 				<List>
 					<ListItem
 						button
-						onClick={() => {
-							logout.mutate();
-							setTimeout(
-								() => dispatchUserAction({ type: 'Logout' }),
-								0,
-							);
-						}}
+						onClick={() => logout.mutate()}
 					>
 						<Typography variant="button">
 							{multilingualDictionary.LogoutThisDevice[languageState]}
@@ -55,13 +64,7 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 
 					<ListItem
 						button
-						onClick={() => {
-							logoutAll.mutate();
-							setTimeout(
-								() => dispatchUserAction({ type: 'Logout' }),
-								0,
-							);
-						}}
+						onClick={() => logoutAll.mutate()}
 					>
 						<Typography variant="button">
 							{multilingualDictionary.LogoutAllDevices[languageState]}
