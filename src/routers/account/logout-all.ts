@@ -6,7 +6,6 @@ import { publicProcedure } from '../../trpc.js';
 const logoutAll = publicProcedure
 	.mutation(
 		async ({ ctx: { bearer } }) => {
-			console.log(bearer);
 			mongoClient
 				.db('squad')
 				.collection('accounts')

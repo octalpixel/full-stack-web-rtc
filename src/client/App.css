@@ -1,7 +1,5 @@
 body {
-	height: 100vh;
 	margin: 0;
-	overflow-y: auto;
 	padding: 0;
 }
 
@@ -17,6 +15,13 @@ main {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
+}
+
+#root {
+	height: 100vh;
+	/* margin: 0; */
+	overflow-y: auto;
+	/* padding: 0; */
 }
 
 /* .language-menu-item:not(:last-of-type) {

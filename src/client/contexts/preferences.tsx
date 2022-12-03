@@ -1,5 +1,6 @@
 import {
 	Dispatch,
+	EventHandler,
 	ReactElement,
 	SetStateAction,
 	createContext,
@@ -34,6 +35,7 @@ export const PreferencesProvider = ({ children }: { children: ReactElement }): R
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const [allowNotificationsState, setAllowNotificationsState] = useState<boolean>();
 	const [darkModeState, setDarkModeState] = useState<boolean>();
+	const [deferredAppInstallPrompt, setDeferredAppInstallPrompt] = useState<Event>();
 	const [languageState, setLanguageState] = useState<Language>('English');
 
 	useEffect(
@@ -46,6 +48,27 @@ export const PreferencesProvider = ({ children }: { children: ReactElement }): R
 			if (!authenticated) setAllowNotificationsState(false);
 		},
 		[authenticated],
+	);
+
+	useEffect(
+		() => {
+			const storePrompt: EventListenerOrEventListenerObject = (event) => {
+				event.preventDefault();
+				setDeferredAppInstallPrompt(event);
+			};
+
+			window.addEventListener(
+				'beforeinstallprompt',
+				storePrompt,
+			);
+
+			return () => {
+				window.removeEventListener(
+					'beforeinstallprompt',
+					storePrompt,
+				);
+			};
+		},
 	);
 
 	const theme = useMemo(

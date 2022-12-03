@@ -18,7 +18,9 @@ import TextField from '@mui/material/TextField';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
+import { PreferencesContext } from '../contexts/preferences';
 import { UserContext } from '../contexts/user';
+import multilingualDictionary from '../constants/multilingual-dictionary';
 import { trpc } from '../hooks/trpc';
 
 interface AuthFormProps {
@@ -31,6 +33,7 @@ export default function AuthForm({
 	toggleOpen,
 }: AuthFormProps): JSX.Element {
 	const { dispatchUserAction } = useContext(UserContext);
+	const { languageState } = useContext(PreferencesContext);
 	const login = trpc.account.login.useMutation();
 	const register = trpc.account.register.useMutation();
 	const requestPasswordReset = trpc.account.requestPasswordReset.useMutation();
@@ -118,7 +121,7 @@ export default function AuthForm({
 								<Tab
 									aria-controls="authentication-options-tabpanel-0"
 									id="login-tab"
-									label="Login"
+									label={multilingualDictionary.Login[languageState]}
 								/>
 								<Tab
 									aria-controls="authentication-options-tabpanel-1"
@@ -128,7 +131,7 @@ export default function AuthForm({
 								<Tab
 									aria-controls="authentication-options-tabpanel-2"
 									id="register-tab"
-									label="Register"
+									label={multilingualDictionary.Register[languageState]}
 								/>
 							</Tabs>
 						</DialogTitle>
@@ -147,7 +150,7 @@ export default function AuthForm({
 									autoComplete="off"
 									autoFocus={selectedTab === 0}
 									fullWidth
-									label="Email Address"
+									label={multilingualDictionary.EmailAddress[languageState]}
 									margin="normal"
 									onChange={(event) => setEmailInput(event.target.value)}
 									required={selectedTab === 0}
@@ -173,7 +176,7 @@ export default function AuthForm({
 									}}
 									autoComplete="off"
 									fullWidth
-									label="Password"
+									label={multilingualDictionary.Password[languageState]}
 									margin="normal"
 									onChange={(event) => setPasswordInput(event.target.value)}
 									required={selectedTab === 0}
@@ -197,7 +200,7 @@ export default function AuthForm({
 									autoComplete="off"
 									autoFocus={selectedTab === 1}
 									fullWidth
-									label="Email Address"
+									label={multilingualDictionary.EmailAddress[languageState]}
 									margin="normal"
 									onChange={(event) => setEmailInput(event.target.value)}
 									required={selectedTab === 1}
@@ -219,7 +222,7 @@ export default function AuthForm({
 									autoComplete="off"
 									autoFocus={selectedTab === 2}
 									fullWidth
-									label="Email Address"
+									label={multilingualDictionary.EmailAddress[languageState]}
 									margin="normal"
 									onChange={(event) => setEmailInput(event.target.value)}
 									required={selectedTab === 2}
@@ -230,7 +233,7 @@ export default function AuthForm({
 								<TextField
 									autoComplete="off"
 									fullWidth
-									label="Account Name"
+									label="User Name"
 									margin="normal"
 									onChange={(event) => setNameInput(event.target.value)}
 									required={selectedTab === 2}
@@ -256,7 +259,7 @@ export default function AuthForm({
 									}}
 									autoComplete="off"
 									fullWidth
-									label="Password"
+									label={multilingualDictionary.Password[languageState]}
 									margin="normal"
 									onChange={(event) => setPasswordInput(event.target.value)}
 									required={selectedTab === 2}
@@ -272,7 +275,7 @@ export default function AuthForm({
 								loading={login.isLoading || register.isLoading || requestPasswordReset.isLoading}
 								type="submit"
 							>
-								Submit
+								{multilingualDictionary.Submit[languageState]}
 							</LoadingButton>
 						</DialogActions>
 					</form>

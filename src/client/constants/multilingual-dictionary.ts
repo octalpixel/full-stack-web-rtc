@@ -36,6 +36,16 @@ const multilingualDictionary: MultilingualDictionary = {
 		Español: '',
 		中文: '',
 	},
+	EmailAddress: {
+		English: 'Email Address',
+		Español: '',
+		中文: '',
+	},
+	InstallApp: {
+		English: 'Install Squad App',
+		Español: '',
+		中文: '',
+	},
 	Language: {
 		English: 'Language',
 		Español: 'Idioma',
@@ -61,6 +71,11 @@ const multilingualDictionary: MultilingualDictionary = {
 		Español: '',
 		中文: '',
 	},
+	LogoutConfirmationDialogTitle: {
+		English: 'Are You Sure?',
+		Español: '',
+		中文: '',
+	},
 	LogoutThisDevice: {
 		English: 'Logout of This Device Only',
 		Español: '',
@@ -68,6 +83,26 @@ const multilingualDictionary: MultilingualDictionary = {
 	},
 	MyProfile: {
 		English: 'My Profile',
+		Español: '',
+		中文: '',
+	},
+	Password: {
+		English: 'Password',
+		Español: '',
+		中文: '',
+	},
+	Register: {
+		English: 'Register',
+		Español: '',
+		中文: '',
+	},
+	Submit: {
+		English: 'Submit',
+		Español: '',
+		中文: '',
+	},
+	UserName: {
+		English: 'User Name',
 		Español: '',
 		中文: '',
 	},

@@ -2,7 +2,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 import App from './App';
-import { UserProvider } from './contexts/user';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
 	<React.StrictMode>
@@ -11,5 +10,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
 );
 
 if ('serviceWorker' in navigator) {
-	navigator.serviceWorker.register('/service-worker.js');
+	(async () => {
+		navigator.serviceWorker.register('/service-worker.js');
+	})();
 }

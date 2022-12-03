@@ -44,8 +44,8 @@ function App() {
 			queryClient={queryClient}
 		>
 			<QueryClientProvider client={queryClient}>
-				<UserProvider>
-					<PreferencesProvider>
+				<PreferencesProvider>
+					<UserProvider>
 						<Navigation>
 							<main>
 								<Routes>
@@ -64,8 +64,8 @@ function App() {
 								</Routes>
 							</main>
 						</Navigation>
-					</PreferencesProvider>
-				</UserProvider>
+					</UserProvider>
+				</PreferencesProvider>
 			</QueryClientProvider>
 		</trpc.Provider>
 	);
