@@ -123,16 +123,19 @@ export default function AuthForm({
 									aria-controls="authentication-options-tabpanel-0"
 									id="login-tab"
 									label={multilingualDictionary.Login[languageState]}
+									tabIndex={0}
 								/>
 								<Tab
 									aria-controls="authentication-options-tabpanel-1"
 									id="password-reset-tab"
 									label="Password Reset"
+									tabIndex={0}
 								/>
 								<Tab
 									aria-controls="authentication-options-tabpanel-2"
 									id="register-tab"
 									label={multilingualDictionary.Register[languageState]}
+									tabIndex={0}
 								/>
 							</Tabs>
 						</DialogTitle>
