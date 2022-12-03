@@ -6,16 +6,16 @@ We value privacy and free speech.  We will never censor, modify, clarify, delete
 
 ## Built With
 
--	Fastify
--	JSONWebTokens
--	Material UI
--	MongoDB
--	NodeJS
--	React
--	React Router
--	Socket.io
--	TanStack React Query
--	tRPC
--	Vite
--	WebRTC
--	Zod
+-	Fastify (https://www.fastify.io/docs/latest/)
+-	JSONWebTokens (https://jwt.io/introduction)
+-	Material UI (https://mui.com/material-ui/getting-started/overview/)
+-	MongoDB (https://www.mongodb.com/docs/)
+-	NodeJS (https://nodejs.org/en/docs/)
+-	React (https://beta.reactjs.org/)
+-	React Router (https://reactrouter.com/en/main)
+-	Socket.io (https://socket.io/docs/v4/)
+-	TanStack React Query (https://tanstack.com/query/v4/docs/overview)
+-	tRPC (https://trpc.io/docs)
+-	Vite (https://vitejs.dev/guide/)
+-	WebRTC (https://webrtc.org/)
+-	Zod (https://zod.dev/)

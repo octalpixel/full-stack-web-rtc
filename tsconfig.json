@@ -18,9 +18,4 @@
   },
   "include": ["src/**/*.ts", "src/client/mount.js"],
   "references": [{ "path": "./tsconfig.node.json" }],
-  // "ts-node": {
-  //   "compilerOptions": {
-  //     "module": "CommonJS"
-  //   },
-  // },
 }

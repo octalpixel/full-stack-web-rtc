@@ -90,6 +90,7 @@ export default function AuthForm({
 				toggleOpen();
 			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[login.isSuccess, register.isSuccess],
 	);
 
@@ -148,7 +149,6 @@ export default function AuthForm({
 							>
 								<TextField
 									autoComplete="off"
-									autoFocus={selectedTab === 0}
 									fullWidth
 									label={multilingualDictionary.EmailAddress[languageState]}
 									margin="normal"
@@ -198,7 +198,6 @@ export default function AuthForm({
 							>
 								<TextField
 									autoComplete="off"
-									autoFocus={selectedTab === 1}
 									fullWidth
 									label={multilingualDictionary.EmailAddress[languageState]}
 									margin="normal"
@@ -220,7 +219,6 @@ export default function AuthForm({
 							>
 								<TextField
 									autoComplete="off"
-									autoFocus={selectedTab === 2}
 									fullWidth
 									label={multilingualDictionary.EmailAddress[languageState]}
 									margin="normal"
