@@ -9,6 +9,8 @@ import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
+import AutoScrollMessages from '../components/AutoScrollMessages';
+import Message from '../types/message';
 import Peer from '../components/Peer';
 import { PreferencesContext } from '../contexts/preferences';
 import { UserContext } from '../contexts/user';
@@ -28,58 +30,66 @@ const Conversation = (): JSX.Element => {
 	const { participantIDs } = useParams();
 	const streamRef = useRef<MediaStream>();
 	const [peersState, setPeersState] = useState<PeerData[]>([]);
+	const [textChatState, setTextChatState] = useState<Message[]>([]);
+	const [mostRecentSentMessageState, setMostRecentSentMessageState] = useState<Message>();
 
 	useEffect(
 		() => {
-			(async () => {
-				try {
-					streamRef.current = await navigator.mediaDevices.getUserMedia({
-						audio: true,
-						video: true,
-					});
-				} catch (error) {
-					console.log(error);
-				}
-			})();
-
-			socketRef.current?.emit(
-				'join-conversation',
-				{ participantIDs },
-			);
-
-			socketRef.current?.on(
-				'conversation-joined',
-				({ peers }: { peers: PeerData[] }) => setPeersState(peers.sort(
-					(a, b) => a.socketName.localeCompare(b.socketName),
-				)),
-			);
-
-			socketRef.current?.on(
-				'peer-disconnected',
-				({ peer }: { peer: PeerData }) => {
-					setPeersState(
-						(prevState) => {
-							return prevState.filter(
-								(p) => p.socketID !== peer.socketID,
-							);
-						},
-					);
-				},
-			);
-
-			socketRef.current?.on(
-				'peer-joined',
-				({ peer }: { peer: PeerData }) => setPeersState((prevState) => [...prevState, peer].sort(
-					(a, b) => a.socketName.localeCompare(b.socketName),
-				)),
-			);
-
-			return () => {
-				socketRef.current?.off('conversation-joined');
-				socketRef.current?.off('peer-joined');
-			};
+			if (participantIDs) {
+				(async () => {
+					try {
+						// streamRef.current = await navigator.mediaDevices.getUserMedia({
+						// 	audio: true,
+						// 	video: true,
+						// });
+						streamRef.current = await navigator.mediaDevices.getDisplayMedia({
+							audio: false, 
+							video: true,
+						});
+					} catch (error) {
+						console.log(error);
+					}
+				})();
+	
+				socketRef.current?.emit(
+					'join-conversation',
+					{ participantIDs },
+				);
+	
+				socketRef.current?.on(
+					'conversation-joined',
+					({ peers }: { peers: PeerData[] }) => setPeersState(peers.sort(
+						(a, b) => a.socketName.localeCompare(b.socketName),
+					)),
+				);
+	
+				socketRef.current?.on(
+					'peer-disconnected',
+					({ peer }: { peer: PeerData }) => {
+						setPeersState(
+							(prevState) => {
+								return prevState.filter(
+									(p) => p.socketID !== peer.socketID,
+								);
+							},
+						);
+					},
+				);
+	
+				socketRef.current?.on(
+					'peer-joined',
+					({ peer }: { peer: PeerData }) => setPeersState((prevState) => [...prevState, peer].sort(
+						(a, b) => a.socketName.localeCompare(b.socketName),
+					)),
+				);
+	
+				return () => {
+					socketRef.current?.off('conversation-joined');
+					socketRef.current?.off('peer-joined');
+				};
+			}
 		},
-		[participantIDs],
+		[participantIDs, userID],
 	);
 
 	if (!participantIDs?.includes(userID)) {
@@ -93,18 +103,35 @@ const Conversation = (): JSX.Element => {
 	}
 
 	return (
-		<Paper>
-			{peersState.map(
-				(peer) => (
-					<Peer
-						key={peer.socketID}
-						socketID={peer.socketID}
-						socketName={peer.socketName}
-						streamRef={streamRef}
-					/>
-				),
-			)}
-		</Paper>
+		<>
+			<Paper>
+				{peersState.map(
+					(peer) => (
+						<Peer
+							key={peer.socketID}
+							mostRecentSentMessageState={mostRecentSentMessageState}
+							setTextChatState={setTextChatState}
+							socketID={peer.socketID}
+							socketName={peer.socketName}
+							streamRef={streamRef}
+						/>
+					),
+				)}
+			</Paper>
+			<AutoScrollMessages
+				messages={textChatState}
+				submitFunction={(message) => {
+					setTextChatState((prevState) => [...prevState, message].sort(
+						(a, b) => {
+							if (a.timestamp > b.timestamp) return -1;
+							if (a.timestamp < b.timestamp) return 1;
+							return 0;
+						},
+					));
+					setMostRecentSentMessageState(message);
+				}}
+			/>
+		</>
 	);
 };
 

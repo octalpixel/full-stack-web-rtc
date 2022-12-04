@@ -1,28 +1,35 @@
 import React, {
+	Dispatch,
 	MutableRefObject,
+	SetStateAction,
 	useContext,
 	useEffect,
 	useRef,
 } from 'react';
-
 import { useParams } from 'react-router-dom';
 
+import Message from '../types/message';
 import { UserContext } from '../contexts/user';
 import iceServers from '../constants/ice-servers';
 
 interface PeerProps {
+	mostRecentSentMessageState?: Message;
+	setTextChatState: Dispatch<SetStateAction<Message[]>>;
 	socketID: string;
 	socketName: string;
 	streamRef: MutableRefObject<MediaStream | undefined>;
 }
 
 const Peer = ({
+	mostRecentSentMessageState,
+	setTextChatState,
 	socketID,
 	socketName,
 	streamRef,
 }: PeerProps): JSX.Element => {
 	const { socketRef } = useContext(UserContext);
 	const { participantIDs } = useParams();
+	const textChatChannel = useRef<RTCDataChannel>();
 	const peerRef = useRef<RTCPeerConnection>();
 	const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -39,6 +46,17 @@ const Peer = ({
 						);
 					},
 				);
+
+			textChatChannel.current = peerRef.current.createDataChannel('text-chat');
+			textChatChannel.current.onmessage = (messageEvent: MessageEvent) => {
+				setTextChatState((prevState) => [...prevState, JSON.parse(messageEvent.data) as Message].sort(
+					(a, b) => {
+						if (a.timestamp > b.timestamp) return -1;
+						if (a.timestamp < b.timestamp) return 1;
+						return 0;
+					},
+				));
+			};
 
 			peerRef.current.onicecandidate = (rtcPeerConnectionIceEvent) => {
 				if (rtcPeerConnectionIceEvent.candidate) {
@@ -76,6 +94,7 @@ const Peer = ({
 				({ sdp }) => {
 					(async () => {
 						try {
+							console.log('answer');
 							await peerRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
 						} catch (error) {
 							console.log(error);
@@ -88,6 +107,7 @@ const Peer = ({
 				`${socketID}-ice-candidate`,
 				({ candidate }) => {
 					if (peerRef.current?.remoteDescription) {
+						console.log('ice-candidate');
 						peerRef.current.addIceCandidate(candidate);
 					} else {
 						const timer = setInterval(
@@ -108,6 +128,7 @@ const Peer = ({
 				({ sdp }) => {
 					(async () => {
 						try {
+							console.log('offer');
 							await peerRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
 							const answer = await peerRef.current?.createAnswer();
 							await peerRef.current?.setLocalDescription(answer);
@@ -133,6 +154,16 @@ const Peer = ({
 			};
 		},
 		[],
+	);
+
+	useEffect(
+		() => {
+			if (textChatChannel.current && mostRecentSentMessageState) {
+				console.log(mostRecentSentMessageState);
+				textChatChannel.current.send(JSON.stringify(mostRecentSentMessageState));
+			}
+		},
+		[mostRecentSentMessageState],
 	);
 
 	return (
