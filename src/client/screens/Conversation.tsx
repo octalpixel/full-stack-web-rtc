@@ -28,6 +28,7 @@ const Conversation = (): JSX.Element => {
 		userState: { userID },
 	} = useContext(UserContext);
 	const { participantIDs } = useParams();
+	const cameraFeedVideoRef = useRef<HTMLVideoElement>(null);
 	const streamRef = useRef<MediaStream>();
 	const [peersState, setPeersState] = useState<PeerData[]>([]);
 	const [textChatState, setTextChatState] = useState<Message[]>([]);
@@ -35,37 +36,45 @@ const Conversation = (): JSX.Element => {
 
 	useEffect(
 		() => {
-			if (participantIDs) {
+			if (userID) {
 				(async () => {
 					try {
-						// streamRef.current = await navigator.mediaDevices.getUserMedia({
-						// 	audio: true,
-						// 	video: true,
-						// });
-						streamRef.current = await navigator.mediaDevices.getDisplayMedia({
-							audio: false, 
+						streamRef.current = await navigator.mediaDevices.getUserMedia({
+							audio: true,
 							video: true,
 						});
+						if (cameraFeedVideoRef.current) {
+							// eslint-disable-next-line prefer-destructuring
+							cameraFeedVideoRef.current.srcObject = streamRef.current;
+						}
+						// streamRef.current = await navigator.mediaDevices.getDisplayMedia({
+						// 	audio: false, 
+						// 	video: true,
+						// });
 					} catch (error) {
 						console.log(error);
 					}
 				})();
-	
+
 				socketRef.current?.emit(
 					'join-conversation',
 					{ participantIDs },
 				);
-	
+
 				socketRef.current?.on(
 					'conversation-joined',
-					({ peers }: { peers: PeerData[] }) => setPeersState(peers.sort(
-						(a, b) => a.socketName.localeCompare(b.socketName),
-					)),
+					({ peers }: { peers: PeerData[] }) => {
+						console.log('conversation-joined');
+						setPeersState(peers.sort(
+							(a, b) => a.socketName.localeCompare(b.socketName),
+						));
+					},
 				);
-	
+
 				socketRef.current?.on(
 					'peer-disconnected',
 					({ peer }: { peer: PeerData }) => {
+						console.log('peer-disconnected');
 						setPeersState(
 							(prevState) => {
 								return prevState.filter(
@@ -75,16 +84,29 @@ const Conversation = (): JSX.Element => {
 						);
 					},
 				);
-	
+
 				socketRef.current?.on(
 					'peer-joined',
-					({ peer }: { peer: PeerData }) => setPeersState((prevState) => [...prevState, peer].sort(
-						(a, b) => a.socketName.localeCompare(b.socketName),
-					)),
+					({ peer }: { peer: PeerData }) => {
+						console.log(`${peer.socketName} joined the conversation`);
+						setPeersState(
+							(prevState) => [...prevState, peer].sort(
+								(a, b) => a.socketName.localeCompare(b.socketName),
+							),
+						);
+						socketRef.current?.emit(
+							'peer-connection-request',
+							{
+								participantIDs,
+								socketID: peer.socketID,
+							},
+						);
+					},
 				);
-	
+
 				return () => {
 					socketRef.current?.off('conversation-joined');
+					socketRef.current?.off('peer-disconnected');
 					socketRef.current?.off('peer-joined');
 				};
 			}
@@ -92,7 +114,26 @@ const Conversation = (): JSX.Element => {
 		[participantIDs, userID],
 	);
 
-	if (!participantIDs?.includes(userID)) {
+	// useEffect(
+	// 	() => {
+	// 		return () => {
+	// 			streamRef.current
+	// 				?.getTracks()
+	// 				.forEach(
+	// 					(track) => track.stop(),
+	// 				);
+	// 		};
+	// 	},
+	// 	[],
+	// );
+
+	if (
+		!userID
+		|| (
+			userID
+			&& !participantIDs?.includes(userID)
+		)
+	) {
 		return (
 			<Paper>
 				<Typography variant="h1">
@@ -105,6 +146,15 @@ const Conversation = (): JSX.Element => {
 	return (
 		<>
 			<Paper>
+				<video
+					autoPlay
+					controls
+					ref={cameraFeedVideoRef}
+					style={{
+						height: 'auto',
+						width: '50%',
+					}}
+				/>
 				{peersState.map(
 					(peer) => (
 						<Peer

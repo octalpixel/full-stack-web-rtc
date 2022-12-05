@@ -99,10 +99,11 @@ const AutoScrollMessages = ({
 									style={{
 										backgroundColor:
 											message.sender === userID
-												? `${primary.main}F0`
-												: `${secondary.main}F0`,
+												? primary.main
+												: secondary.main,
 										minWidth: '50%',
 										overflowWrap: 'break-word',
+										padding: '0 4px',
 										textAlign: message.sender === userID
 											? 'right'
 											: 'left',
@@ -110,13 +111,17 @@ const AutoScrollMessages = ({
 								>
 									{message.content.split('\n').map((subString, index) => (
 										<Typography
+											color="white"
 											key={index}
 											variant="body1"
 										>
 											{subString}
 										</Typography>
 									))}
-									<Typography variant="caption">
+									<Typography
+										color="white"
+										variant="caption"
+									>
 										{new Date(message.timestamp).toLocaleString()}
 									</Typography>
 								</Paper>

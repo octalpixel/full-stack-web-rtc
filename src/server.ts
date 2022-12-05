@@ -90,10 +90,13 @@ const envOptions = {
 				({
 					participantIDs,
 					sdp,
-				}) => socket.to(participantIDs).emit(
-					`${socket.id}-answer`,
-					{ sdp },
-				),
+				}) => {
+					console.log('answer');
+					socket.to(participantIDs).emit(
+						`${socket.id}-answer`,
+						{ sdp },
+					);
+				},
 			);
 
 			socket.on(
@@ -118,10 +121,13 @@ const envOptions = {
 				({
 					participantIDs,
 					candidate,
-				}) => socket.to(participantIDs).emit(
-					`${socket.id}-ice-candidate`,
-					{ candidate },
-				),
+				}) => {
+					console.log('ice-candidate');
+					socket.to(participantIDs).emit(
+						`${socket.id}-ice-candidate`,
+						{ candidate },
+					);
+				},
 			);
 
 			socket.on(
@@ -129,6 +135,7 @@ const envOptions = {
 				({ participantIDs }) => {
 					// ensure only invited users can join the conversation
 					if (participantIDs.includes(socket.data.userID)) {
+						console.log(`${socket.data.userName} joined ${participantIDs}`);
 						socket.join(participantIDs);
 						socket.to(participantIDs).emit(
 							'peer-joined',
@@ -141,14 +148,21 @@ const envOptions = {
 						);
 						(async () => {
 							const peers = await fastify.io.in(participantIDs).fetchSockets();
+							console.log(`${socket.data.userName} joined ${participantIDs}`);
 							fastify.io.to(socket.id).emit(
 								'conversation-joined',
 								{
-									// let the newly connected socket know who else has joined the conversation
-									peers: peers.map((peer) => ({
-										socketID: peer.id,
-										socketName: peer.data.userName,
-									})), 
+									// let the newly connected socket know who else has already joined the conversation
+									peers: peers
+										.filter(
+											(peer) => peer.id !== socket.id,
+										)
+										.map(
+											(peer) => ({
+												socketID: peer.id,
+												socketName: peer.data.userName,
+											}),
+										), 
 								},
 							);
 						})();
@@ -163,10 +177,13 @@ const envOptions = {
 				({
 					participantIDs,
 					sdp,
-				}) => socket.to(participantIDs).emit(
-					`${socket.id}-offer`,
-					{ sdp },
-				),
+				}) => {
+					console.log('offer');
+					socket.to(participantIDs).emit(
+						`${socket.id}-offer`,
+						{ sdp },
+					);
+				},
 			);
 
 			// socket.on(
@@ -178,6 +195,17 @@ const envOptions = {
 			// 		})();
 			// 	},
 			// );
+
+			socket.on(
+				'peer-connection-request',
+				({
+					participantIDs,
+					socketID,
+				}) => {
+					console.log(`${socket.data.userName} requested to connect with ${socketID} in ${participantIDs}`);
+					socket.to(socketID).emit(`${socket.id}-peer-connection-requested`);
+				},
+			);
 		},
 	);
 

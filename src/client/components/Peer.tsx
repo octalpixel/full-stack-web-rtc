@@ -1,7 +1,8 @@
-import React, {
+import {
 	Dispatch,
 	MutableRefObject,
 	SetStateAction,
+	useCallback,
 	useContext,
 	useEffect,
 	useRef,
@@ -10,7 +11,7 @@ import { useParams } from 'react-router-dom';
 
 import Message from '../types/message';
 import { UserContext } from '../contexts/user';
-import iceServers from '../constants/ice-servers';
+import rtcConfiguration from '../constants/rtc-configuration';
 
 interface PeerProps {
 	mostRecentSentMessageState?: Message;
@@ -29,107 +30,114 @@ const Peer = ({
 }: PeerProps): JSX.Element => {
 	const { socketRef } = useContext(UserContext);
 	const { participantIDs } = useParams();
-	const textChatChannel = useRef<RTCDataChannel>();
+	const textChatChannelRef = useRef<RTCDataChannel>();
 	const peerRef = useRef<RTCPeerConnection>();
 	const videoRef = useRef<HTMLVideoElement>(null);
 
-	useEffect(
-		() => {
-			peerRef.current = new RTCPeerConnection(iceServers);
-			streamRef.current
-				?.getTracks()
-				.forEach(
-					(track) => {
-						peerRef.current?.addTrack(
-							track,
-							streamRef.current as MediaStream,
-						);
+	const createRTCPeerConnection = () => {
+		peerRef.current = new RTCPeerConnection(rtcConfiguration);
+		peerRef.current.onicecandidate = (rtcPeerConnectionIceEvent) => {
+			console.log('ice-candidate');
+			if (rtcPeerConnectionIceEvent.candidate) {
+				socketRef.current?.emit(
+					'ice-candidate',
+					{
+						candidate: rtcPeerConnectionIceEvent.candidate,
+						participantIDs,
 					},
 				);
+			}
+		};
 
-			textChatChannel.current = peerRef.current.createDataChannel('text-chat');
-			textChatChannel.current.onmessage = (messageEvent: MessageEvent) => {
-				setTextChatState((prevState) => [...prevState, JSON.parse(messageEvent.data) as Message].sort(
-					(a, b) => {
-						if (a.timestamp > b.timestamp) return -1;
-						if (a.timestamp < b.timestamp) return 1;
-						return 0;
+		peerRef.current.onnegotiationneeded = () => {
+			(async () => {
+				console.log('negotiation-needed');
+				const offer = await peerRef.current?.createOffer();
+				await peerRef.current?.setLocalDescription(offer);
+				socketRef.current?.emit(
+					'offer',
+					{
+						participantIDs,
+						sdp: peerRef.current?.localDescription,
 					},
-				));
-			};
+				);
+			})();
+		};
 
-			peerRef.current.onicecandidate = (rtcPeerConnectionIceEvent) => {
-				if (rtcPeerConnectionIceEvent.candidate) {
-					socketRef.current?.emit(
-						'ice-candidate',
-						{
-							candidate: rtcPeerConnectionIceEvent.candidate,
-							participantIDs,
-						},
-					);
-				}
-			};
+		peerRef.current.ontrack = (rtcTrackEvent) => {
+			console.log('track');
+			// eslint-disable-next-line prefer-destructuring
+			if (videoRef.current) videoRef.current.srcObject = rtcTrackEvent.streams[0];
+		};
+	};
 
-			peerRef.current.onnegotiationneeded = () => {
-				(async () => {
-					const offer = await peerRef.current?.createOffer();
-					await peerRef.current?.setLocalDescription(offer);
-					socketRef.current?.emit(
-						'offer',
-						{
-							participantIDs,
-							sdp: peerRef.current?.localDescription,
-						},
-					);
-				})();
-			};
+	const handleIncomingTextChatMessage = useCallback(
+		(messageEvent: MessageEvent) => {
+			setTextChatState((prevState) => [...prevState, JSON.parse(messageEvent.data) as Message].sort(
+				(a, b) => {
+					if (a.timestamp > b.timestamp) return -1;
+					if (a.timestamp < b.timestamp) return 1;
+					return 0;
+				},
+			));
+		},
+		[setTextChatState],
+	);
 
-			peerRef.current.ontrack = (rtcTrackEvent) => {
-				const { streams: [stream] } = rtcTrackEvent;
-				if (videoRef.current) videoRef.current.srcObject = stream;
-			};
-
+	useEffect(
+		() => {
 			socketRef.current?.on(
 				`${socketID}-answer`,
 				({ sdp }) => {
-					(async () => {
-						try {
-							console.log('answer');
-							await peerRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
-						} catch (error) {
-							console.log(error);
-						}
-					})();
+					console.log('answer');
+					peerRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
 				},
 			);
 
 			socketRef.current?.on(
 				`${socketID}-ice-candidate`,
 				({ candidate }) => {
-					if (peerRef.current?.remoteDescription) {
-						console.log('ice-candidate');
-						peerRef.current.addIceCandidate(candidate);
-					} else {
-						const timer = setInterval(
-							() => {
-								if (peerRef.current?.remoteDescription) {
-									clearInterval(timer);
-									peerRef.current.addIceCandidate(candidate);
-								}
-							},
-							100,
-						);
-					}
+					console.log('ice-candidate');
+					peerRef.current?.addIceCandidate(candidate);
 				},
 			);
 
 			socketRef.current?.on(
 				`${socketID}-offer`,
 				({ sdp }) => {
-					(async () => {
-						try {
-							console.log('offer');
+					console.log('offer');
+					// if (!peerRef.current) {
+					createRTCPeerConnection();
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+						peerRef.current!.ondatachannel = (rtcDataChannelEvent) => {
+							switch (rtcDataChannelEvent.channel.label) {
+								case 'text-chat':
+									// eslint-disable-next-line prefer-destructuring
+									textChatChannelRef.current = rtcDataChannelEvent.channel;
+									textChatChannelRef.current.onmessage = handleIncomingTextChatMessage;
+									return;
+								default:
+									return;
+							}
+						};
+					// }
+
+						(async () => {
 							await peerRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
+							streamRef.current
+								?.getTracks()
+								.forEach(
+									(track) => {
+										if (peerRef.current) {
+											console.log('track added');
+											console.log(streamRef.current);
+											peerRef.current.addTrack(
+												track,
+												streamRef.current as MediaStream,
+											);
+										}
+									},
+								);
 							const answer = await peerRef.current?.createAnswer();
 							await peerRef.current?.setLocalDescription(answer);
 							socketRef.current?.emit(
@@ -139,18 +147,60 @@ const Peer = ({
 									sdp: peerRef.current?.localDescription,
 								},
 							);
-						} catch (error) {
-							console.log(error);
-						}
-					})();
+						})();
+				},
+			);
+
+			socketRef.current?.on(
+				`${socketID}-peer-connection-requested`,
+				() => {
+					console.log('peer-connection-requested');
+					createRTCPeerConnection();
+					textChatChannelRef.current = peerRef.current?.createDataChannel('text-chat');
+
+					if (textChatChannelRef.current) {
+						textChatChannelRef.current.onmessage = handleIncomingTextChatMessage;
+					}
+
+					if (streamRef.current) {
+						streamRef.current
+							.getTracks()
+							.forEach(
+								(track) => {
+									peerRef.current?.addTrack(
+										track,
+										streamRef.current as MediaStream,
+									);
+								},
+							);
+					} else {
+						const timer = setInterval(
+							() => {
+								if (streamRef.current) {
+									clearInterval(timer);
+									streamRef.current
+										.getTracks()
+										.forEach(
+											(track) => {
+												peerRef.current?.addTrack(
+													track,
+													streamRef.current as MediaStream,
+												);
+											},
+										);
+								}
+							},
+							100,
+						);
+					}
 				},
 			);
 
 			return () => {
-				peerRef.current?.close();
 				socketRef.current?.off(`${socketID}-answer`);
 				socketRef.current?.off(`${socketID}-ice-candidate`);
 				socketRef.current?.off(`${socketID}-offer`);
+				socketRef.current?.off(`${socketID}-peer-connection-requested`);
 			};
 		},
 		[],
@@ -158,9 +208,8 @@ const Peer = ({
 
 	useEffect(
 		() => {
-			if (textChatChannel.current && mostRecentSentMessageState) {
-				console.log(mostRecentSentMessageState);
-				textChatChannel.current.send(JSON.stringify(mostRecentSentMessageState));
+			if (mostRecentSentMessageState) {
+				textChatChannelRef.current?.send(JSON.stringify(mostRecentSentMessageState));
 			}
 		},
 		[mostRecentSentMessageState],
@@ -171,6 +220,10 @@ const Peer = ({
 			autoPlay
 			controls
 			ref={videoRef}
+			style={{
+				height: 'auto',
+				width: '50%',
+			}}
 		/>
 	);
 };

@@ -55,7 +55,10 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 				<List>
 					<ListItem
 						button
-						onClick={() => logout.mutate()}
+						onClick={() => {
+							logout.mutate();
+							setLogoutDialogOpen((prevState) => !prevState);
+						}}
 					>
 						<Typography variant="button">
 							{multilingualDictionary.LogoutThisDevice[languageState]}
@@ -64,7 +67,10 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 
 					<ListItem
 						button
-						onClick={() => logoutAll.mutate()}
+						onClick={() => {
+							logoutAll.mutate();
+							setLogoutDialogOpen((prevState) => !prevState);
+						}}
 					>
 						<Typography variant="button">
 							{multilingualDictionary.LogoutAllDevices[languageState]}
