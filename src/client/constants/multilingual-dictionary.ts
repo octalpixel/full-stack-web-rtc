@@ -3,47 +3,47 @@ import MultilingualDictionary from '../types/multilingual-dictionary';
 const multilingualDictionary: MultilingualDictionary = {
 	About: {
 		English: 'About',
-		Español: '',
+		Español: '¿Quiénes somos?',
 		中文: '',
 	},
 	AccessDenied: {
 		English: 'Oops!  Looks like you aren\'t welcome here...',
-		Español: '',
+		Español: '¡Lo Siento! No se puede aceder esta página...',
 		中文: '',
 	},
 	AllowNotifications: {
 		English: 'Turn On Notifications',
-		Español: '',
+		Español: 'Prender Notifications',
 		中文: '',
 	},
 	AppName: {
 		English: 'Squad',
-		Español: 'Pelotón',
+		Español: 'Escuadrón',
 		中文: '伙伴',
 	},
 	CancelLogout: {
 		English: 'Psych!  JK, Don\'t Log Me Out!',
-		Español: '',
+		Español: '¡No quiero salir de mi cuenta!',
 		中文: '',
 	},
 	DarkMode: {
 		English: 'Switch to Dark Mode',
-		Español: '',
+		Español: 'Cambiar a modo oscuro',
 		中文: '',
 	},
 	DisallowNotifications: {
 		English: 'Turn Off Notifications',
-		Español: '',
+		Español: 'Apagar notificaciones',
 		中文: '',
 	},
 	EmailAddress: {
 		English: 'Email Address',
-		Español: '',
+		Español: 'Correo',
 		中文: '',
 	},
 	InstallApp: {
 		English: 'Install Squad App',
-		Español: '',
+		Español: 'Instalar Escuadrón',
 		中文: '',
 	},
 	Language: {
@@ -53,57 +53,57 @@ const multilingualDictionary: MultilingualDictionary = {
 	},
 	LightMode: {
 		English: 'Switch to Light Mode',
-		Español: '',
+		Español: 'Cambiar a modo claro',
 		中文: '',
 	},
 	Login: {
 		English: 'Login',
-		Español: '',
+		Español: 'Entrar cuenta',
 		中文: '',
 	},
 	Logout: {
 		English: 'Logout',
-		Español: '',
+		Español: 'Salir',
 		中文: '',
 	},
 	LogoutAllDevices: {
 		English: 'Logout of All Devices',
-		Español: '',
+		Español: 'Salir de todos aparatos',
 		中文: '',
 	},
 	LogoutConfirmationDialogTitle: {
 		English: 'Are You Sure?',
-		Español: '',
+		Español: '¿Está seguro?',
 		中文: '',
 	},
 	LogoutThisDevice: {
 		English: 'Logout of This Device Only',
-		Español: '',
+		Español: 'Salir de solo este aparato',
 		中文: '',
 	},
 	MyProfile: {
 		English: 'My Profile',
-		Español: '',
+		Español: 'Mi Perfil',
 		中文: '',
 	},
 	Password: {
 		English: 'Password',
-		Español: '',
+		Español: 'Contraseña',
 		中文: '',
 	},
 	Register: {
 		English: 'Register',
-		Español: '',
+		Español: 'Registrar',
 		中文: '',
 	},
 	Submit: {
 		English: 'Submit',
-		Español: '',
+		Español: 'Enviar',
 		中文: '',
 	},
 	UserName: {
 		English: 'User Name',
-		Español: '',
+		Español: 'Nombre de Usuario',
 		中文: '',
 	},
 };
