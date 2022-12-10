@@ -90,7 +90,7 @@ const Peer = ({
 				`${socketID}-answer`,
 				({ sdp }) => {
 					console.log('answer');
-					peerRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
+					peerRef.current?.setRemoteDescription(sdp);
 				},
 			);
 
@@ -123,7 +123,7 @@ const Peer = ({
 					// }
 
 						(async () => {
-							await peerRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
+							await peerRef.current?.setRemoteDescription(sdp);
 							streamRef.current
 								?.getTracks()
 								.forEach(

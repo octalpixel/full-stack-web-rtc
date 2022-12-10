@@ -1,6 +1,7 @@
 import {
 	useContext,
 	useEffect,
+	useReducer,
 	useRef,
 	useState,
 } from 'react';
@@ -9,10 +10,11 @@ import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
+import conversationReducer, { ConversationState } from '../reducers/conversation';
 import AutoScrollMessages from '../components/AutoScrollMessages';
-import Message from '../types/message';
 import Peer from '../components/Peer';
 import { PreferencesContext } from '../contexts/preferences';
+import { Socket } from 'socket.io-client';
 import { UserContext } from '../contexts/user';
 import multilingualDictionary from '../constants/multilingual-dictionary';
 
@@ -30,9 +32,18 @@ const Conversation = (): JSX.Element => {
 	const { participantIDs } = useParams();
 	const cameraFeedVideoRef = useRef<HTMLVideoElement>(null);
 	const streamRef = useRef<MediaStream>();
-	const [peersState, setPeersState] = useState<PeerData[]>([]);
-	const [textChatState, setTextChatState] = useState<Message[]>([]);
-	const [mostRecentSentMessageState, setMostRecentSentMessageState] = useState<Message>();
+	// const [peersState, setPeersState] = useState<PeerData[]>([]);
+	const [conversationState, dispatchConversationAction] = useReducer(
+		conversationReducer,
+		{
+			dispatchConversationAction: () => { /*  */ },
+			participantIDs: '',
+			peers: {},
+			socket: null as unknown as Socket,
+			stream: null as unknown as MediaStream,
+			textChat: [],
+		} as ConversationState,
+	);
 
 	useEffect(
 		() => {
@@ -62,26 +73,48 @@ const Conversation = (): JSX.Element => {
 				);
 
 				socketRef.current?.on(
+					'answer',
+					({
+						sdp,
+						socketID,
+					}: {
+						sdp: RTCSessionDescriptionInit;
+						socketID: string;
+					}) => {
+						console.log('answer');
+						dispatchConversationAction({
+							payload: {
+								sdp,
+								socketID,
+							},
+							type: 'RecordAnswer',
+						});
+					},
+				);
+
+				socketRef.current?.on(
 					'conversation-joined',
 					({ peers }: { peers: PeerData[] }) => {
 						console.log('conversation-joined');
-						setPeersState(peers.sort(
-							(a, b) => a.socketName.localeCompare(b.socketName),
-						));
+						peers.forEach(
+							({ socketID }) => {
+								dispatchConversationAction({
+									payload: { socketID },
+									type: 'CreatePeer',
+								});
+							},
+						);
 					},
 				);
 
 				socketRef.current?.on(
 					'peer-disconnected',
-					({ peer }: { peer: PeerData }) => {
+					({ socketID }: { socketID: string }) => {
 						console.log('peer-disconnected');
-						setPeersState(
-							(prevState) => {
-								return prevState.filter(
-									(p) => p.socketID !== peer.socketID,
-								);
-							},
-						);
+						dispatchConversationAction({
+							payload: { socketID },
+							type: 'DisconnectPeer',
+						});
 					},
 				);
 
@@ -89,11 +122,10 @@ const Conversation = (): JSX.Element => {
 					'peer-joined',
 					({ peer }: { peer: PeerData }) => {
 						console.log(`${peer.socketName} joined the conversation`);
-						setPeersState(
-							(prevState) => [...prevState, peer].sort(
-								(a, b) => a.socketName.localeCompare(b.socketName),
-							),
-						);
+						dispatchConversationAction({
+							payload: { socketID: peer.socketID },
+							type: 'CreatePeer',
+						});
 						socketRef.current?.emit(
 							'peer-connection-request',
 							{
@@ -105,6 +137,7 @@ const Conversation = (): JSX.Element => {
 				);
 
 				return () => {
+					socketRef.current?.off('answer');
 					socketRef.current?.off('conversation-joined');
 					socketRef.current?.off('peer-disconnected');
 					socketRef.current?.off('peer-joined');
@@ -155,18 +188,20 @@ const Conversation = (): JSX.Element => {
 						width: '50%',
 					}}
 				/>
-				{peersState.map(
-					(peer) => (
-						<Peer
-							key={peer.socketID}
-							mostRecentSentMessageState={mostRecentSentMessageState}
-							setTextChatState={setTextChatState}
-							socketID={peer.socketID}
-							socketName={peer.socketName}
-							streamRef={streamRef}
-						/>
-					),
-				)}
+				{Object
+					.entries(conversationState.peers)
+					.map(
+						([socketID, peerConnection]) => (
+							<Peer
+								key={socketID}
+								mostRecentSentMessageState={mostRecentSentMessageState}
+								setTextChatState={setTextChatState}
+								socketID={socketID}
+								socketName={socketName}
+								streamRef={streamRef}
+							/>
+						),
+					)}
 			</Paper>
 			<AutoScrollMessages
 				messages={textChatState}
