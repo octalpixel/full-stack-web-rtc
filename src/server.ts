@@ -15,15 +15,15 @@ import { createContext } from './context.js';
 import mongoClient from './mongo-client.js';
 
 declare module 'fastify' {
-  interface FastifyInstance {
-    config: {
-      JWT_ACCESS_SECRET: string,
-      JWT_PASSWORD_RESET_SECRET: string,
-      JWT_REFRESH_SECRET: string,
-      SALT_ROUNDS: string,
-      SENDGRID_API_KEY: string,
-    };
-  }
+	interface FastifyInstance {
+		config: {
+			JWT_ACCESS_SECRET: string,
+			JWT_PASSWORD_RESET_SECRET: string,
+			JWT_REFRESH_SECRET: string,
+			SALT_ROUNDS: string,
+			SENDGRID_API_KEY: string,
+		};
+	}
 }
 
 const fastify = Fastify();
@@ -88,13 +88,16 @@ const envOptions = {
 			socket.on(
 				'answer',
 				({
-					participantIDs,
+					peerID,
 					sdp,
 				}) => {
 					console.log('answer');
-					socket.to(participantIDs).emit(
-						`${socket.id}-answer`,
-						{ sdp },
+					socket.to(peerID).emit(
+						'answer',
+						{
+							sdp,
+							socketID: socket.id,
+						},
 					);
 				},
 			);
@@ -119,13 +122,16 @@ const envOptions = {
 			socket.on(
 				'ice-candidate',
 				({
-					participantIDs,
+					peerID,
 					candidate,
 				}) => {
 					console.log('ice-candidate');
-					socket.to(participantIDs).emit(
-						`${socket.id}-ice-candidate`,
-						{ candidate },
+					socket.to(peerID).emit(
+						'ice-candidate',
+						{
+							candidate,
+							socketID: socket.id,
+						},
 					);
 				},
 			);
@@ -175,13 +181,16 @@ const envOptions = {
 			socket.on(
 				'offer',
 				({
-					participantIDs,
+					peerID,
 					sdp,
 				}) => {
 					console.log('offer');
-					socket.to(participantIDs).emit(
-						`${socket.id}-offer`,
-						{ sdp },
+					socket.to(peerID).emit(
+						'offer',
+						{
+							sdp,
+							socketID: socket.id,
+						},
 					);
 				},
 			);

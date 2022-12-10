@@ -71,7 +71,7 @@ export default function conversationReducer(
 		stream,
 		textChat,
 	} = state;
-	const createRTCPeerConnection = () => {
+	const createRTCPeerConnection = (peerID: string) => {
 		const peer = new RTCPeerConnection(rtcConfiguration);
 		peer.onicecandidate = (rtcPeerConnectionIceEvent) => {
 			console.log('ice-candidate');
@@ -94,7 +94,7 @@ export default function conversationReducer(
 				socket.emit(
 					'offer',
 					{
-						participantIDs,
+						peerID,
 						sdp: peer.localDescription,
 					},
 				);
@@ -118,7 +118,7 @@ export default function conversationReducer(
 				...state,
 				peers: {
 					...peers,
-					[socketID]: createRTCPeerConnection(),
+					[socketID]: createRTCPeerConnection(socketID),
 				},
 			};
 		}
@@ -171,7 +171,7 @@ export default function conversationReducer(
 					socketID,
 				},
 			} = action;
-			const peer = createRTCPeerConnection();
+			const peer = createRTCPeerConnection(socketID);
 			peer.ondatachannel = (rtcDataChannelEvent) => {
 				switch (rtcDataChannelEvent.channel.label) {
 					case 'text-chat':
@@ -204,7 +204,7 @@ export default function conversationReducer(
 				socket.emit(
 					'answer',
 					{
-						participantIDs,
+						peerID: socketID,
 						sdp: peer.localDescription,
 					},
 				);

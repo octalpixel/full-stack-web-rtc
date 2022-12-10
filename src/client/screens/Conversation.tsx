@@ -3,7 +3,6 @@ import {
 	useEffect,
 	useReducer,
 	useRef,
-	useState,
 } from 'react';
 
 import Paper from '@mui/material/Paper';
@@ -108,6 +107,32 @@ const Conversation = (): JSX.Element => {
 				);
 
 				socketRef.current?.on(
+					'ice-candidate',
+					(payload: {
+						candidate: RTCIceCandidateInit;
+						socketID: string;
+					}) => {
+						dispatchConversationAction({
+							payload,
+							type: 'RecordICECandidate',
+						});
+					},
+				);
+
+				socketRef.current?.on(
+					'offer',
+					(payload: {
+						sdp: RTCSessionDescriptionInit;
+						socketID: string;
+					}) => {
+						dispatchConversationAction({
+							payload,
+							type: 'RespondToOffer',
+						});
+					},
+				);
+
+				socketRef.current?.on(
 					'peer-disconnected',
 					({ socketID }: { socketID: string }) => {
 						console.log('peer-disconnected');
@@ -139,6 +164,8 @@ const Conversation = (): JSX.Element => {
 				return () => {
 					socketRef.current?.off('answer');
 					socketRef.current?.off('conversation-joined');
+					socketRef.current?.off('ice-candidate');
+					socketRef.current?.off('offer');
 					socketRef.current?.off('peer-disconnected');
 					socketRef.current?.off('peer-joined');
 				};
@@ -147,18 +174,18 @@ const Conversation = (): JSX.Element => {
 		[participantIDs, userID],
 	);
 
-	// useEffect(
-	// 	() => {
-	// 		return () => {
-	// 			streamRef.current
-	// 				?.getTracks()
-	// 				.forEach(
-	// 					(track) => track.stop(),
-	// 				);
-	// 		};
-	// 	},
-	// 	[],
-	// );
+	useEffect(
+		() => {
+			return () => {
+				streamRef.current
+					?.getTracks()
+					.forEach(
+						(track) => track.stop(),
+					);
+			};
+		},
+		[],
+	);
 
 	if (
 		!userID
@@ -194,26 +221,18 @@ const Conversation = (): JSX.Element => {
 						([socketID, peerConnection]) => (
 							<Peer
 								key={socketID}
-								mostRecentSentMessageState={mostRecentSentMessageState}
-								setTextChatState={setTextChatState}
-								socketID={socketID}
-								socketName={socketName}
-								streamRef={streamRef}
+								peerConnection={peerConnection}
 							/>
 						),
 					)}
 			</Paper>
 			<AutoScrollMessages
-				messages={textChatState}
+				messages={conversationState.textChat}
 				submitFunction={(message) => {
-					setTextChatState((prevState) => [...prevState, message].sort(
-						(a, b) => {
-							if (a.timestamp > b.timestamp) return -1;
-							if (a.timestamp < b.timestamp) return 1;
-							return 0;
-						},
-					));
-					setMostRecentSentMessageState(message);
+					dispatchConversationAction({
+						payload: message,
+						type: 'RecordTextChatMessage',
+					});
 				}}
 			/>
 		</>
