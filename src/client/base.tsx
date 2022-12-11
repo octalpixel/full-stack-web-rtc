@@ -12,7 +12,7 @@ const Router = import.meta.env.SSR
 	? StaticRouter
 	: BrowserRouter;
 
-export function createApp(ctx, url) {
+export function createApp(ctx: unknown, url: string) {
 	return (
 		<StrictMode>
 			<Suspense>

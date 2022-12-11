@@ -1,5 +1,5 @@
-import { createApp } from './base';
-import routes from './routes';
+import { createApp } from './base.jsx';
+import routes from './routes.jsx';
 
 export default {
 	createApp,

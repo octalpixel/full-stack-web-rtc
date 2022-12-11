@@ -200,7 +200,7 @@ const envOptions = {
 			// 		return { element: renderToString(createApp()) };
 			// 	};
 			// },
-			dev: process.argv.includes('--dev'),
+			// dev: process.argv.includes('--dev'),
 			renderer: {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -227,6 +227,7 @@ const envOptions = {
 			},
 			root: join(
 				import.meta.url,
+				'..',
 				'..',
 				'..',
 			),

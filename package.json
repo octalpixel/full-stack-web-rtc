@@ -4,10 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
-    "dev": "ts-node-esm src/server.ts --dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build --outDir ../../dist/client --ssrManifest",
+    "build:server": "vite build --outDir ../../dist/server --ssr ../server/index.ts",
+    "dev": "ts-node-esm src/server/index.ts --dev",
     "lint": "eslint ./src",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": ""
   },
   "dependencies": {
     "@babel/core": "^7.20.2",
