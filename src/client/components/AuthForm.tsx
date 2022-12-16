@@ -5,16 +5,17 @@ import {
 	useState,
 } from 'react';
 
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button/index.js';
+import Dialog from '@mui/material/Dialog/index.js';
+import DialogActions from '@mui/material/DialogActions/index.js';
+import DialogContent from '@mui/material/DialogContent/index.js';
+import DialogTitle from '@mui/material/DialogTitle/index.js';
+import IconButton from '@mui/material/IconButton/index.js';
+import InputAdornment from '@mui/material/InputAdornment/index.js';
+// import LoadingButton from '@mui/lab/LoadingButton/index.js';
+import Tab from '@mui/material/Tab/index.js';
+import Tabs from '@mui/material/Tabs/index.js';
+import TextField from '@mui/material/TextField/index.js';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
@@ -272,12 +273,16 @@ export default function AuthForm({
 							</div>
 						</DialogContent>
 						<DialogActions>
-							<LoadingButton
-								loading={login.isLoading || register.isLoading || requestPasswordReset.isLoading}
+							<Button
 								type="submit"
 							>
+							{/* <LoadingButton
+								loading={login.isLoading || register.isLoading || requestPasswordReset.isLoading}
+								type="submit"
+							> */}
 								{multilingualDictionary.Submit[languageState]}
-							</LoadingButton>
+							{/* </LoadingButton> */}
+							</Button>
 						</DialogActions>
 					</form>
 				)}

@@ -4,14 +4,14 @@ import React, {
 	useState,
 } from 'react';
 
-import AppBar from '@mui/material/AppBar';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import AppBar from '@mui/material/AppBar/index.js';
+import Dialog from '@mui/material/Dialog/index.js';
+import DialogTitle from '@mui/material/DialogTitle/index.js';
+import List from '@mui/material/List/index.js';
+import ListItem from '@mui/material/ListItem/index.js';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import Toolbar from '@mui/material/Toolbar/index.js';
+import Typography from '@mui/material/Typography/index.js';
 
 import NavigationButtonSet from './NavigationButtonSet';
 import { PreferencesContext } from '../contexts/preferences';

@@ -5,8 +5,8 @@ import {
 	useState,
 } from 'react';
 
-import Paper from '@mui/material/Paper';
-import { Typography } from '@mui/material';
+import Paper from '@mui/material/Paper/index.js';
+import Typography from '@mui/material/Typography/index.js';
 import { useParams } from 'react-router-dom';
 
 import AutoScrollMessages from '../components/AutoScrollMessages';

@@ -1,5 +1,3 @@
-// import react from '@vitejs/plugin-react';
-
 import viteReact from '@vitejs/plugin-react';
 
 import {
@@ -16,4 +14,11 @@ export default defineConfig({
 		'src',
 		'client',
 	),
+	build: {
+		outDir: join(
+			'..',
+			'..',
+			'dist',
+		),
+	},
 });

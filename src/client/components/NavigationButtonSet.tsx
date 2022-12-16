@@ -6,7 +6,7 @@ import React, {
 } from 'react';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import IconButton from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton/index.js';
 import InfoIcon from '@mui/icons-material/Info';
 import InstallDesktopIcon from '@mui/icons-material/InstallDesktop';
 import InstallMobileIcon from '@mui/icons-material/InstallMobile';
@@ -14,13 +14,13 @@ import LanguageIcon from '@mui/icons-material/Language';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu/index.js';
+import MenuItem from '@mui/material/MenuItem/index.js';
 import NightlightRoundIcon from '@mui/icons-material/NightlightRound';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import { Link as RRDLink } from 'react-router-dom';
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from '@mui/material/Tooltip/index.js';
 
 import { PreferencesContext } from '../contexts/preferences';
 import { UserContext } from '../contexts/user';
