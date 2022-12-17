@@ -16,13 +16,13 @@ import InputAdornment from '@mui/material/InputAdornment/index.js';
 import Tab from '@mui/material/Tab/index.js';
 import Tabs from '@mui/material/Tabs/index.js';
 import TextField from '@mui/material/TextField/index.js';
-import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined.js';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined.js';
 
-import { PreferencesContext } from '../contexts/preferences';
-import { UserContext } from '../contexts/user';
-import multilingualDictionary from '../constants/multilingual-dictionary';
-import { trpc } from '../hooks/trpc';
+import { PreferencesContext } from '../contexts/preferences.jsx';
+import { UserContext } from '../contexts/user.jsx';
+import multilingualDictionary from '../constants/multilingual-dictionary.js';
+import { trpc } from '../hooks/trpc.js';
 
 interface AuthFormProps {
 	open: boolean;

@@ -9,12 +9,12 @@ import Paper from '@mui/material/Paper/index.js';
 import Typography from '@mui/material/Typography/index.js';
 import { useParams } from 'react-router-dom';
 
-import AutoScrollMessages from '../components/AutoScrollMessages';
-import Message from '../types/message';
-import Peer from '../components/Peer';
-import { PreferencesContext } from '../contexts/preferences';
-import { UserContext } from '../contexts/user';
-import multilingualDictionary from '../constants/multilingual-dictionary';
+import AutoScrollMessages from '../components/AutoScrollMessages.jsx';
+import Message from '../types/message.js';
+import Peer from '../components/Peer.jsx';
+import { PreferencesContext } from '../contexts/preferences.jsx';
+import { UserContext } from '../contexts/user.jsx';
+import multilingualDictionary from '../constants/multilingual-dictionary.js';
 
 interface PeerData {
 	socketID: string;

@@ -4,7 +4,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
-import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
+import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined.js';
 import Button from '@mui/material/Button/index.js';
 import Card from '@mui/material/Card/index.js';
 import CardActions from '@mui/material/CardActions/index.js';
@@ -16,8 +16,8 @@ import Typography from '@mui/material/Typography/index.js';
 import { useTheme } from '@mui/material/styles/index.js';
 import { v4 as uuidv4 } from 'uuid';
 
-import Message from '../types/message';
-import { UserContext } from '../contexts/user';
+import Message from '../types/message.js';
+import { UserContext } from '../contexts/user.jsx';
 
 interface AutoScrollMessagesProps {
 	messages: Message[];

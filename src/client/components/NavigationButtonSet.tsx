@@ -5,27 +5,27 @@ import React, {
 	useState,
 } from 'react';
 
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle.js';
 import IconButton from '@mui/material/IconButton/index.js';
-import InfoIcon from '@mui/icons-material/Info';
-import InstallDesktopIcon from '@mui/icons-material/InstallDesktop';
-import InstallMobileIcon from '@mui/icons-material/InstallMobile';
-import LanguageIcon from '@mui/icons-material/Language';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
+import InfoIcon from '@mui/icons-material/Info.js';
+import InstallDesktopIcon from '@mui/icons-material/InstallDesktop.js';
+import InstallMobileIcon from '@mui/icons-material/InstallMobile.js';
+import LanguageIcon from '@mui/icons-material/Language.js';
+import LightModeIcon from '@mui/icons-material/LightMode.js';
+import LoginIcon from '@mui/icons-material/Login.js';
+import LogoutIcon from '@mui/icons-material/Logout.js';
 import Menu from '@mui/material/Menu/index.js';
 import MenuItem from '@mui/material/MenuItem/index.js';
-import NightlightRoundIcon from '@mui/icons-material/NightlightRound';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
+import NightlightRoundIcon from '@mui/icons-material/NightlightRound.js';
+import NotificationsIcon from '@mui/icons-material/Notifications.js';
+import NotificationsOffIcon from '@mui/icons-material/NotificationsOff.js';
 import { Link as RRDLink } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip/index.js';
 
-import { PreferencesContext } from '../contexts/preferences';
-import { UserContext } from '../contexts/user';
-import { language } from '../types/language';
-import multilingualDictionary from '../constants/multilingual-dictionary';
+import { PreferencesContext } from '../contexts/preferences.jsx';
+import { UserContext } from '../contexts/user.jsx';
+import { language } from '../types/language.js';
+import multilingualDictionary from '../constants/multilingual-dictionary.js';
 
 interface NavigationButtonSetProps {
 	setLogoutDialogOpen: Dispatch<SetStateAction<boolean>>;

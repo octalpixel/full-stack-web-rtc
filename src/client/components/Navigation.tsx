@@ -9,15 +9,15 @@ import Dialog from '@mui/material/Dialog/index.js';
 import DialogTitle from '@mui/material/DialogTitle/index.js';
 import List from '@mui/material/List/index.js';
 import ListItem from '@mui/material/ListItem/index.js';
-import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined.js';
 import Toolbar from '@mui/material/Toolbar/index.js';
 import Typography from '@mui/material/Typography/index.js';
 
-import NavigationButtonSet from './NavigationButtonSet';
-import { PreferencesContext } from '../contexts/preferences';
-import { UserContext } from '../contexts/user';
-import multilingualDictionary from '../constants/multilingual-dictionary';
-import { trpc } from '../hooks/trpc';
+import NavigationButtonSet from './NavigationButtonSet.jsx';
+import { PreferencesContext } from '../contexts/preferences.jsx';
+import { UserContext } from '../contexts/user.jsx';
+import multilingualDictionary from '../constants/multilingual-dictionary.js';
+import { trpc } from '../hooks/trpc.js';
 
 const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 	const {

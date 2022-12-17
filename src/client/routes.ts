@@ -1,6 +1,6 @@
-import About from './screens/About';
-import Conversation from './screens/Conversation';
-import Profile from './screens/Profile';
+import About from './screens/About.js';
+import Conversation from './screens/Conversation.js';
+import Profile from './screens/Profile.js';
 
 const routes = [
 	{

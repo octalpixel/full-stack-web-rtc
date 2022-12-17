@@ -1,6 +1,6 @@
 import { hydrateRoot } from 'react-dom/client';
 
-import { createApp } from './base';
+import { createApp } from './base.tsx';
 
 hydrateRoot(
 	document.querySelector('#root'),

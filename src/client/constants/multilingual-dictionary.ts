@@ -1,4 +1,4 @@
-import MultilingualDictionary from '../types/multilingual-dictionary';
+import MultilingualDictionary from '../types/multilingual-dictionary.js';
 
 const multilingualDictionary: MultilingualDictionary = {
 	About: {

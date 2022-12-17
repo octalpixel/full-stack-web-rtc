@@ -7,12 +7,14 @@ import {
 	Suspense,
 } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { StaticRouter } from 'react-router-dom/server';
+import { StaticRouter } from 'react-router-dom/server.js';
 
-import App from './App';
-import { ClientModule } from '.';
+import App from './App.jsx';
+import { ClientModule } from './index.js';
 
-const Router = import.meta.env.SSR
+const Router = (
+	(import.meta as any).env?.SSR
+)
 	? StaticRouter
 	: BrowserRouter;
 

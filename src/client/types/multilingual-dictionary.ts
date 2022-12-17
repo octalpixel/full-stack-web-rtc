@@ -1,4 +1,4 @@
-import { Language } from './language';
+import { Language } from './language.js';
 
 interface MultilingualDictionary {
 	/** Tooltip text for the icon button navigation link to the page with information about the app */
