@@ -73,7 +73,7 @@ const envOptions = {
 		.io
 		.on(
 			'connection',
-			socketConnectionEventListener,
+			socketConnectionEventListener.bind(fastify.io),
 		);
 
 	fastify.register(

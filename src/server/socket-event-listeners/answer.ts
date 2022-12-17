@@ -2,15 +2,17 @@ import { Socket } from 'socket.io';
 
 import AnswerEventPayload from '../../types/socket-event-payloads/answer.js';
 
-const socketAnswerEventListener = ({
-  participantIDs,
-  sdp,
-}: AnswerEventPayload) => {
-  const socket = this as unknown as Socket;
-  socket
+function socketAnswerEventListener(
+  this: Socket,
+  {
+    participantIDs,
+    sdp,
+  }: AnswerEventPayload,
+) {
+  this
     .to(participantIDs)
     .emit(
-      `${socket.id}-answer`,
+      `${this.id}-answer`,
       { sdp },
     );
 };

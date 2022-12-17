@@ -1,17 +1,16 @@
 import { Socket } from 'socket.io';
 
-const socketDisconnectingEventListener = () => {
-  const socket = this as unknown as Socket;
-  socket.rooms.forEach(
+function socketDisconnectingEventListener(this: Socket) {
+  this.rooms.forEach(
     (room) => {
-      socket
+      this
         .to(room)
         .emit(
           'peer-disconnected',
           {
             peer: {
-              socketID: socket.id,
-              socketName: socket.data.userName,
+              socketID: this.id,
+              socketName: this.data.userName,
             },
           },
         );

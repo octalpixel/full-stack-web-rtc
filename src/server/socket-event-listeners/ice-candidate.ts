@@ -2,15 +2,17 @@ import { Socket } from 'socket.io';
 
 import ICECandidateEventPayload from '../../types/socket-event-payloads/ice-candidate.js';
 
-const socketICECandidateEventListener = ({
-  participantIDs,
-  candidate,
-}: ICECandidateEventPayload) => {
-  const socket = this as unknown as Socket;
-  socket
+function socketICECandidateEventListener(
+  this: Socket,
+  {
+    participantIDs,
+    candidate,
+  }: ICECandidateEventPayload,
+) {
+  this
     .to(participantIDs)
     .emit(
-      `${socket.id}-ice-candidate`,
+      `${this.id}-ice-candidate`,
       { candidate },
     );
 };
