@@ -16,7 +16,7 @@ import {
 } from '@mui/material/styles/index.js';
 import useMediaQuery from '@mui/material/useMediaQuery/index.js';
 
-import { Language } from '../types/language.js';
+import { Language } from '../../types/language.js';
 import { UserContext } from './user.jsx';
 
 interface PreferencesContextValue {

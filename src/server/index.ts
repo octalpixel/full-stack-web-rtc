@@ -1,10 +1,12 @@
-import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
+import Fastify, {
+	FastifyReply,
+	FastifyRequest,
+} from 'fastify';
 import FastifyEnv from '@fastify/env';
 // @ts-ignore
 import FastifyVite from '@fastify/vite';
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
 import { join } from 'path';
-import jwt from 'jsonwebtoken';
 import { renderToString } from 'react-dom/server';
 import socketioServer from 'fastify-socket.io';
 // import { stringify } from 'devalue';
@@ -14,6 +16,8 @@ import { CreateApp } from '../client/base.js';
 import { appRouter } from './routers/index.js';
 import { createContext } from './context.js';
 import mongoClient from './mongo-client.js';
+import socketAuthentication from './middleware/socket-authentication.js';
+import socketConnectionEventListener from './socket-event-listeners/connection.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -63,145 +67,13 @@ const envOptions = {
 
 	fastify
 		.io
-		.use(
-			(socket, next) => {
-				const { handshake: { auth: { token } } } = socket;
-				try {
-					const {
-						sub,
-						userName,
-					} = jwt.verify(
-						token,
-						process.env.JWT_ACCESS_SECRET as string,
-					) as jwt.JwtPayload & {
-						userName: string;
-					};
-					socket.data.userID = sub;
-					socket.data.userName = userName;
-					next();
-				} catch (error) {
-					next(error as Error);
-				}
-			},
-		);
+		.use(socketAuthentication);
 
 	fastify
 		.io
 		.on(
 			'connection',
-			(socket) => {
-				socket.on(
-					'answer',
-					({
-						participantIDs,
-						sdp,
-					}) => {
-						socket
-							.to(participantIDs)
-							.emit(
-								`${socket.id}-answer`,
-								{ sdp },
-							);
-					},
-				);
-
-				socket.on(
-					'disconnecting',
-					() => {
-						socket.rooms.forEach(
-							(room) => {
-								socket
-									.to(room)
-									.emit(
-										'peer-disconnected',
-										{
-											peer: {
-												socketID: socket.id,
-												socketName: socket.data.userName,
-											},
-										},
-									);
-							},
-						);
-					},
-				);
-
-				socket.on(
-					'ice-candidate',
-					({
-						participantIDs,
-						candidate,
-					}) => {
-						socket
-							.to(participantIDs)
-							.emit(
-								`${socket.id}-ice-candidate`,
-								{ candidate },
-							);
-					},
-				);
-
-				socket.on(
-					'join-conversation',
-					({ participantIDs }) => {
-						// ensure only invited users can join the conversation
-						if (participantIDs.includes(socket.data.userID)) {
-							socket.join(participantIDs);
-							socket.to(participantIDs).emit(
-								'peer-joined',
-								{
-									peer: {
-										socketID: socket.id,
-										socketName: socket.data.userName,
-									},
-								},
-							);
-							(async () => {
-								const peers = await fastify
-									.io
-									.in(participantIDs)
-									.fetchSockets();
-								fastify
-									.io
-									.to(socket.id)
-									.emit(
-										'conversation-joined',
-										{
-											// let the newly connected socket know who else has joined the conversation
-											peers: peers.map((peer) => ({
-												socketID: peer.id,
-												socketName: peer.data.userName,
-											})), 
-										},
-									);
-							})();
-						} else {
-							socket._error(new Error('Access Denied.'));
-						}
-					},
-				);
-
-				socket.on(
-					'offer',
-					({
-						participantIDs,
-						sdp,
-					}) => socket.to(participantIDs).emit(
-						`${socket.id}-offer`,
-						{ sdp },
-					),
-				);
-
-				// socket.on(
-				// 	'ping',
-				// 	() => {
-				// 		(async () => {
-				// 			const sockets = await fastify.io.fetchSockets();
-				// 			sockets.forEach(() => { /* do something */ });
-				// 		})();
-				// 	},
-				// );
-			},
+			socketConnectionEventListener,
 		);
 
 	fastify.register(
@@ -262,14 +134,6 @@ const envOptions = {
 
 	// @ts-ignore
 	await fastify.vite.ready();
-
-	// fastify.get(
-	// 	'/',
-	// 	(req, reply) => {
-	// 		// @ts-ignore
-	// 		reply.html(reply.render(clientModule, req.url));
-	// 	},
-	// );
 
 	const port = 6969;
 	await fastify.listen({ port });

@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography/index.js';
 import { useParams } from 'react-router-dom';
 
 import AutoScrollMessages from '../components/AutoScrollMessages.jsx';
-import Message from '../types/message.js';
+import Message from '../../types/message.js';
 import Peer from '../components/Peer.jsx';
 import { PreferencesContext } from '../contexts/preferences.jsx';
 import { UserContext } from '../contexts/user.jsx';

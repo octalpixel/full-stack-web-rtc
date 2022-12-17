@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography/index.js';
 import { useTheme } from '@mui/material/styles/index.js';
 import { v4 as uuidv4 } from 'uuid';
 
-import Message from '../types/message.js';
+import Message from '../../types/message.js';
 import { UserContext } from '../contexts/user.jsx';
 
 interface AutoScrollMessagesProps {

@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { useParams } from 'react-router-dom';
 
-import Message from '../types/message.js';
+import Message from '../../types/message.js';
 import { UserContext } from '../contexts/user.jsx';
 import iceServers from '../constants/ice-servers.js';
 

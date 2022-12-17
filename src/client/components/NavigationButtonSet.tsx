@@ -24,7 +24,7 @@ import Tooltip from '@mui/material/Tooltip/index.js';
 
 import { PreferencesContext } from '../contexts/preferences.jsx';
 import { UserContext } from '../contexts/user.jsx';
-import { language } from '../types/language.js';
+import { language } from '../../types/language.js';
 import multilingualDictionary from '../constants/multilingual-dictionary.js';
 
 interface NavigationButtonSetProps {
