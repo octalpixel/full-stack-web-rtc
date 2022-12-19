@@ -1,9 +1,8 @@
-FROM node:16.14.1
+FROM node:16.14.2
 WORKDIR /app
 COPY package*.json ./
-RUN npm i -g pnpm
-RUN pnpm install
+RUN npm install
 COPY . .
 ENV PORT=8080
 EXPOSE 8080
-CMD ["pnpm", "start"]
+CMD ["npm", "start"]

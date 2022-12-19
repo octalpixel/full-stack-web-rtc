@@ -18,6 +18,7 @@ import { createContext } from './context.js';
 import mongoClient from './mongo-client.js';
 import socketAuthentication from './middleware/socket-authentication.js';
 import socketConnectionEventListener from './socket-event-listeners/connection.js';
+import fastifyEnvOptions from './constants/fastify-env-options.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -25,6 +26,7 @@ declare module 'fastify' {
       JWT_ACCESS_SECRET: string,
       JWT_PASSWORD_RESET_SECRET: string,
       JWT_REFRESH_SECRET: string,
+			PORT: number,
       SALT_ROUNDS: string,
       SENDGRID_API_KEY: string,
     };
@@ -33,33 +35,10 @@ declare module 'fastify' {
 
 const fastify = Fastify();
 
-const envOptions = {
-	// confKey: 'config',
-	// data: process.env,
-	dotenv: true,
-	schema: {
-		properties: {
-			JWT_ACCESS_SECRET: { type: 'string' },
-			JWT_PASSWORD_RESET_SECRET: { type: 'string' },
-			JWT_REFRESH_SECRET: { type: 'string' },
-			SALT_ROUNDS: { type: 'string' },
-			SENDGRID_API_KEY: { type: 'string' },
-		},
-		required: [
-			'JWT_ACCESS_SECRET',
-			'JWT_PASSWORD_RESET_SECRET',
-			'JWT_REFRESH_SECRET',
-			'SALT_ROUNDS',
-			'SENDGRID_API_KEY',
-		],
-		type: 'object',
-	},
-};
-
 (async () => {
 	fastify.register(
 		FastifyEnv,
-		envOptions,
+		fastifyEnvOptions,
 	);
 	await fastify.after();
 	await mongoClient.connect();
@@ -132,10 +111,8 @@ const envOptions = {
 		},
 	);
 
-	// @ts-ignore
-	await fastify.vite.ready();
+	await (fastify as typeof fastify & { vite: { ready(): Promise<void> } }).vite.ready();
 
-	const port = 6969;
-	await fastify.listen({ port });
-	console.log(`Fastify listening on port ${port}!`);
+	await fastify.listen({ port: fastify.config.PORT });
+	console.log(`Fastify listening on port ${fastify.config.PORT}!`);
 })();

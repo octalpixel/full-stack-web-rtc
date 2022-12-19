@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography/index.js';
 import { useParams } from 'react-router-dom';
 
 import AutoScrollMessages from '../components/AutoScrollMessages.jsx';
+import JoinConversationEventPayload from '../../types/socket-event-payloads/join-conversation.js';
 import Message from '../../types/message.js';
 import Peer from '../components/Peer.jsx';
 import { PreferencesContext } from '../contexts/preferences.jsx';
@@ -53,7 +54,7 @@ const Conversation = (): JSX.Element => {
 	
 				socketRef.current?.emit(
 					'join-conversation',
-					{ participantIDs },
+					{ participantIDs } as JoinConversationEventPayload,
 				);
 	
 				socketRef.current?.on(

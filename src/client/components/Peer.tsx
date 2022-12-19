@@ -8,7 +8,10 @@ import React, {
 } from 'react';
 import { useParams } from 'react-router-dom';
 
+import AnswerEventPayload from '../../types/socket-event-payloads/answer.js';
+import ICECandidateEventPayload from '../../types/socket-event-payloads/ice-candidate.js';
 import Message from '../../types/message.js';
+import OfferEventPayload from '../../types/socket-event-payloads/offer.js';
 import { UserContext } from '../contexts/user.jsx';
 import iceServers from '../constants/ice-servers.js';
 
@@ -65,7 +68,7 @@ const Peer = ({
 						{
 							candidate: rtcPeerConnectionIceEvent.candidate,
 							participantIDs,
-						},
+						} as ICECandidateEventPayload,
 					);
 				}
 			};
@@ -79,7 +82,7 @@ const Peer = ({
 						{
 							participantIDs,
 							sdp: peerRef.current?.localDescription,
-						},
+						} as OfferEventPayload,
 					);
 				})();
 			};
@@ -137,7 +140,7 @@ const Peer = ({
 								{
 									participantIDs,
 									sdp: peerRef.current?.localDescription,
-								},
+								} as AnswerEventPayload,
 							);
 						} catch (error) {
 							console.log(error);
