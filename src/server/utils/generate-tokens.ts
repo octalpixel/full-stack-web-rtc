@@ -38,7 +38,6 @@ const generateTokens = async ({
 		refreshToken.split('.')[2],
 		parseInt(process.env.SALT_ROUNDS as string),
 	);
-
 	return {
 		accessToken,
 		hashedRefreshToken,

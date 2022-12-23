@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import mongoClient from '../../mongo-client.js';
+import mongoClient from '../../constants/mongo-client.js';
 import { publicProcedure } from '../../trpc.js';
 
 const subscribeToPushNotifications = publicProcedure

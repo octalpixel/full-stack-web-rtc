@@ -1,0 +1,25 @@
+services:
+  app:
+    build:
+      target: base
+    command: sh -c "pnpm run dev"
+    expose:
+      - '8080'
+    ports:
+      - 6969:8080
+    volumes:
+      - ./:/full-stack-webrtc
+    environment:
+      JWT_ACCESS_SECRET: abc
+      JWT_PASSWORD_RESET_SECRET: def
+      JWT_REFRESH_SECRET: hij
+      PORT: 8080
+      SALT_ROUNDS: 6
+      SENDGRID_API_KEY: SG.123
+  db:
+    image: mongo:6.0.3
+    volumes:
+      - db-volume:/data/db
+
+volumes:
+  db-volume:

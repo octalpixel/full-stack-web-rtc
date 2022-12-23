@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
 import generateTokens from '../../utils/generate-tokens.js';
-import mongoClient from '../../mongo-client.js';
+import mongoClient from '../../constants/mongo-client.js';
 import { publicProcedure } from '../../trpc.js';
 
 const refresh = publicProcedure

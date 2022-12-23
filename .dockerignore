@@ -1,1 +1,5 @@
 node_modules
+.npmrc
+package.json
+pnpm-lock.yaml
+.pnpmfile.cjs

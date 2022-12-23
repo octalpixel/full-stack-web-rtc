@@ -3,6 +3,7 @@ import Fastify, {
 	FastifyRequest,
 } from 'fastify';
 import FastifyEnv from '@fastify/env';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import FastifyVite from '@fastify/vite';
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
@@ -12,24 +13,17 @@ import socketioServer from 'fastify-socket.io';
 // import { stringify } from 'devalue';
 
 import clientModule, { ClientModule } from '../client/index.js';
+import fastifyEnvOptions, { EnvironmentVariables } from './constants/fastify-env-options.js';
 import { CreateApp } from '../client/base.js';
 import { appRouter } from './routers/index.js';
 import { createContext } from './context.js';
-import mongoClient from './mongo-client.js';
+import mongoClient from './constants/mongo-client.js';
 import socketAuthentication from './middleware/socket-authentication.js';
 import socketConnectionEventListener from './socket-event-listeners/connection.js';
-import fastifyEnvOptions from './constants/fastify-env-options.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
-    config: {
-      JWT_ACCESS_SECRET: string,
-      JWT_PASSWORD_RESET_SECRET: string,
-      JWT_REFRESH_SECRET: string,
-			PORT: number,
-      SALT_ROUNDS: string,
-      SENDGRID_API_KEY: string,
-    };
+    config: EnvironmentVariables;
   }
 }
 

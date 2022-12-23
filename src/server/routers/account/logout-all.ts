@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import mongoClient from '../../mongo-client.js';
+import mongoClient from '../../constants/mongo-client.js';
 import { publicProcedure } from '../../trpc.js';
 
 const logoutAll = publicProcedure
