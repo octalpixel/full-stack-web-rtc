@@ -17,6 +17,7 @@ const submitPasswordReset = publicProcedure
 	)
 	.mutation(
 		async ({
+			ctx,
 			input: {
 				password,
 				reset_token,
@@ -28,14 +29,14 @@ const submitPasswordReset = publicProcedure
 				userName,
 			} = jwt.verify(
 				reset_token,
-			process.env.JWT_PASSWORD_RESET_SECRET as string,
+				ctx.config.JWT_PASSWORD_RESET_SECRET,
 			) as jwt.JwtPayload & {
 				email: string;
 				userName: string;
 			};
 			const hashedPassword = await bcrypt.hash(
 				password,
-				parseInt(process.env.SALT_ROUNDS as string),
+				ctx.config.SALT_ROUNDS,
 			);
 			const clientID = new ObjectId();
 			const {
@@ -44,6 +45,7 @@ const submitPasswordReset = publicProcedure
 				refreshToken,
 			} = await generateTokens({
 				clientID: clientID.toHexString(),
+				config: ctx.config,
 				userID: sub as string,
 				userName,
 			});

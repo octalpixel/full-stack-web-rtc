@@ -8,7 +8,7 @@ import AppBar from '@mui/material/AppBar/index.js';
 import Dialog from '@mui/material/Dialog/index.js';
 import DialogTitle from '@mui/material/DialogTitle/index.js';
 import List from '@mui/material/List/index.js';
-import ListItem from '@mui/material/ListItem/index.js';
+import ListItemButton from '@mui/material/ListItemButton/index.js';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined.js';
 import Toolbar from '@mui/material/Toolbar/index.js';
 import Typography from '@mui/material/Typography/index.js';
@@ -47,38 +47,39 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 		<>
 			<Dialog
 				onClose={() => setLogoutDialogOpen((prevState) => !prevState)}
-				open={authenticated && logoutDialogOpen}
+				open={logoutDialogOpen}
 			>
 				<DialogTitle>
 					{multilingualDictionary.LogoutConfirmationDialogTitle[languageState]}
 				</DialogTitle>
 				<List>
-					<ListItem
-						button
-						onClick={() => logout.mutate()}
+					<ListItemButton
+						onClick={() => {
+							logout.mutate();
+							setLogoutDialogOpen(false);
+						}}
 					>
 						<Typography variant="button">
 							{multilingualDictionary.LogoutThisDevice[languageState]}
 						</Typography>
-					</ListItem>
+					</ListItemButton>
 
-					<ListItem
-						button
-						onClick={() => logoutAll.mutate()}
+					<ListItemButton
+						onClick={() => {
+							logoutAll.mutate();
+							setLogoutDialogOpen(false);
+						}}
 					>
 						<Typography variant="button">
 							{multilingualDictionary.LogoutAllDevices[languageState]}
 						</Typography>
-					</ListItem>
+					</ListItemButton>
 
-					<ListItem
-						button
-						onClick={() => setLogoutDialogOpen((prevState) => !prevState)}
-					>
+					<ListItemButton onClick={() => setLogoutDialogOpen(false)}>
 						<Typography variant="button">
 							{multilingualDictionary.CancelLogout[languageState]}
 						</Typography>
-					</ListItem>
+					</ListItemButton>
 				</List>
 			</Dialog>
 

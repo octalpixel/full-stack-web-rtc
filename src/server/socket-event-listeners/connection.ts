@@ -1,15 +1,13 @@
-import {
-	Server,
-	Socket,
-} from 'socket.io';
+import { Socket } from 'socket.io';
 
+import { FastifyServer } from '../index.js';
 import socketAnswerEventListener from './answer.js';
 import socketDisconnectingEventListener from './disconnecting.js';
 import socketICECandidateEventListener from './ice-candidate.js';
 import socketJoinConversationEventListener from './join-conversation.js';
 import socketOfferEventListener from './offer.js';
 
-function socketConnectionEventListener(this: Server, socket: Socket) {
+function socketConnectionEventListener(this: FastifyServer, socket: Socket) {
 	socket.on(
 		'answer',
 		socketAnswerEventListener.bind(socket),
@@ -47,6 +45,6 @@ function socketConnectionEventListener(this: Server, socket: Socket) {
 	// 		})();
 	// 	},
 	// );
-};
+}
 
 export default socketConnectionEventListener;

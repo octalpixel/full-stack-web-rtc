@@ -22,12 +22,13 @@ import socketAuthentication from './middleware/socket-authentication.js';
 import socketConnectionEventListener from './socket-event-listeners/connection.js';
 
 declare module 'fastify' {
-  interface FastifyInstance {
-    config: EnvironmentVariables;
-  }
+	interface FastifyInstance {
+		config: EnvironmentVariables;
+	}
 }
 
 const fastify = Fastify();
+export type FastifyServer = typeof fastify;
 
 (async () => {
 	fastify.register(
@@ -40,13 +41,13 @@ const fastify = Fastify();
 
 	fastify
 		.io
-		.use(socketAuthentication);
+		.use(socketAuthentication.bind(fastify));
 
 	fastify
 		.io
 		.on(
 			'connection',
-			socketConnectionEventListener.bind(fastify.io),
+			socketConnectionEventListener.bind(fastify),
 		);
 
 	fastify.register(
@@ -54,7 +55,7 @@ const fastify = Fastify();
 		{
 			prefix: '/trpc',
 			trpcOptions: {
-				createContext,
+				createContext: createContext.bind(fastify),
 				router: appRouter,
 			},
 		},
@@ -107,6 +108,9 @@ const fastify = Fastify();
 
 	await (fastify as typeof fastify & { vite: { ready(): Promise<void> } }).vite.ready();
 
-	await fastify.listen({ port: fastify.config.PORT });
-	console.log(`Fastify listening on port ${fastify.config.PORT}!`);
+	await fastify.listen({
+		host: '0.0.0.0',
+		port: fastify.config.APP_PORT,
+	});
+	console.log(`Fastify listening on port ${fastify.config.APP_PORT}!`);
 })();

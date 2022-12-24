@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
 
-const mongoClient = new MongoClient('mongodb://127.0.0.1:27017/squad');
+const mongoClient = new MongoClient(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/squad`);
 
 export default mongoClient;

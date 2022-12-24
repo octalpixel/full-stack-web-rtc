@@ -1,14 +1,18 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+import { EnvironmentVariables } from '../constants/fastify-env-options';
+
 interface GenerateTokensParams {
 	clientID: string;
+	config: EnvironmentVariables;
 	userID: string;
 	userName: string;
 }
 
 const generateTokens = async ({
 	clientID,
+	config,
 	userName,
 	userID,
 }: GenerateTokensParams) => {
@@ -17,7 +21,7 @@ const generateTokens = async ({
 			clientID,
 			userName,
 		},
-		process.env.JWT_ACCESS_SECRET as string,
+		config.JWT_ACCESS_SECRET,
 		{
 			// expires every 15 minutes
 			expiresIn: 60 * 15,
@@ -26,7 +30,7 @@ const generateTokens = async ({
 	);
 	const refreshToken = jwt.sign(
 		{ clientID },
-		process.env.JWT_REFRESH_SECRET as string,
+		config.JWT_REFRESH_SECRET,
 		{
 			// expires roughly every 3 months
 			expiresIn: 60 * 60 * 24 * 91,
@@ -36,7 +40,7 @@ const generateTokens = async ({
 	const hashedRefreshToken = await bcrypt.hash(
 		// https://github.com/kelektiv/node.bcrypt.js/issues/935
 		refreshToken.split('.')[2],
-		parseInt(process.env.SALT_ROUNDS as string),
+		config.SALT_ROUNDS,
 	);
 	return {
 		accessToken,

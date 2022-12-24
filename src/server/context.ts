@@ -2,10 +2,15 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
 import { inferAsyncReturnType } from '@trpc/server';
 
-export function createContext({
-	req,
-	res, 
-}: CreateFastifyContextOptions) {
+import { FastifyServer } from './index.js';
+
+export function createContext(
+	this: FastifyServer,
+	{
+		req,
+		res,
+	}: CreateFastifyContextOptions,
+) {
 	if ('authorization' in req.headers) {
 		const token = req
 			.headers
@@ -14,12 +19,12 @@ export function createContext({
 				'Bearer ',
 				'',
 			);
-		
+
 		if (token) {
 			try {
 				const decodedToken = jwt.verify(
 					token,
-					process.env.JWT_ACCESS_SECRET as string,
+					this.config.JWT_ACCESS_SECRET,
 				) as JwtPayload & { clientID: string };
 
 				return {
@@ -27,12 +32,14 @@ export function createContext({
 						clientID: decodedToken.clientID,
 						userID: decodedToken.sub,
 					},
+					config: this.config,
 					req,
 					res,
 				};
 			} catch (error) {
 				return {
 					bearer: null,
+					config: this.config,
 					req,
 					res,
 				};
@@ -41,6 +48,7 @@ export function createContext({
 	}
 	return {
 		bearer: null,
+		config: this.config,
 		req,
 		res,
 	};

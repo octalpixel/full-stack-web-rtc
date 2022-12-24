@@ -2,10 +2,12 @@ import { JSONSchemaType } from 'env-schema';
 import { fastifyEnvOpt } from '@fastify/env';
 
 export interface EnvironmentVariables {
+	APP_PORT: number;
+	DB_HOST: string;
+	DB_PORT: number;
 	JWT_ACCESS_SECRET: string;
 	JWT_PASSWORD_RESET_SECRET: string;
 	JWT_REFRESH_SECRET: string;
-	PORT: number;
 	SALT_ROUNDS: number;
 	SENDGRID_API_KEY: string;
 }
@@ -19,6 +21,18 @@ const fastifyEnvOptions: Omit<
 	dotenv: true,
 	schema: {
 		properties: {
+			APP_PORT: {
+				default: 6969,
+				type: 'number',
+			},
+			DB_HOST: {
+				default: '127.0.0.1',
+				type: 'string',
+			},
+			DB_PORT: {
+				default: 27017,
+				type: 'number',
+			},
 			JWT_ACCESS_SECRET: {
 				default: 'abc',
 				type: 'string',
@@ -31,10 +45,6 @@ const fastifyEnvOptions: Omit<
 				default: 'hij',
 				type: 'string',
 			},
-			PORT: {
-				default: 6969,
-				type: 'number',
-			},
 			SALT_ROUNDS: {
 				default: 6,
 				type: 'number',
@@ -45,10 +55,12 @@ const fastifyEnvOptions: Omit<
 			},
 		},
 		required: [
+			'APP_PORT',
+			'DB_HOST',
+			'DB_PORT',
 			'JWT_ACCESS_SECRET',
 			'JWT_PASSWORD_RESET_SECRET',
 			'JWT_REFRESH_SECRET',
-			'PORT',
 			'SALT_ROUNDS',
 			'SENDGRID_API_KEY',
 		],

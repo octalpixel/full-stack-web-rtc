@@ -9,7 +9,10 @@ import sgMail from '../../constants/sendgrid-mail.js';
 const requestPasswordReset = publicProcedure
 	.input(z.object({ email: z.string() }))
 	.mutation(
-		async ({ input: { email } }) => {
+		async ({
+			ctx,
+			input: { email }, 
+		}) => {
 			const account = await mongoClient
 				.db('squad')
 				.collection('accounts')
@@ -27,7 +30,7 @@ const requestPasswordReset = publicProcedure
 					email,
 					userName: account.name,
 				},
-				process.env.JWT_PASSWORD_RESET_SECRET as string,
+				ctx.config.JWT_PASSWORD_RESET_SECRET,
 				{
 					expiresIn: 60 * 15,
 					subject: account._id.toHexString(),

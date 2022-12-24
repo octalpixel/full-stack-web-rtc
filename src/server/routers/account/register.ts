@@ -17,6 +17,7 @@ const register = publicProcedure
 	)
 	.mutation(
 		async ({
+			ctx,
 			input: {
 				email,
 				name,
@@ -25,7 +26,7 @@ const register = publicProcedure
 		}) => {
 			const hashedPassword = await bcrypt.hash(
 				password,
-				parseInt(process.env.SALT_ROUNDS as string),
+				ctx.config.SALT_ROUNDS,
 			);
 			const userID = new ObjectId();
 			const clientID = new ObjectId();
@@ -35,6 +36,7 @@ const register = publicProcedure
 				refreshToken,
 			} = await generateTokens({
 				clientID: clientID.toHexString(),
+				config: ctx.config,
 				userID: userID.toHexString(),
 				userName: name,
 			});
