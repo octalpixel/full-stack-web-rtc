@@ -273,15 +273,13 @@ export default function AuthForm({
 							</div>
 						</DialogContent>
 						<DialogActions>
-							<Button
-								type="submit"
-							>
-							{/* <LoadingButton
+							<Button type="submit">
+								{/* <LoadingButton
 								loading={login.isLoading || register.isLoading || requestPasswordReset.isLoading}
 								type="submit"
 							> */}
 								{multilingualDictionary.Submit[languageState]}
-							{/* </LoadingButton> */}
+								{/* </LoadingButton> */}
 							</Button>
 						</DialogActions>
 					</form>

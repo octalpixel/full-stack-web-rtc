@@ -1,5 +1,5 @@
 interface JoinConversationEventPayload {
-  participantIDs: string;
-};
+	participantIDs: string;
+}
 
 export default JoinConversationEventPayload;

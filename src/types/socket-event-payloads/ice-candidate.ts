@@ -1,6 +1,6 @@
 interface ICECandidateEventPayload {
-  participantIDs: string;
-  candidate: RTCIceCandidate;
-};
+	candidate: RTCIceCandidate;
+	participantIDs: string;
+}
 
 export default ICECandidateEventPayload;

@@ -12,9 +12,7 @@ import { StaticRouter } from 'react-router-dom/server.js';
 import App from './App.jsx';
 import { ClientModule } from './index.js';
 
-const Router = (
-	(import.meta as any).env?.SSR
-)
+const Router = (import.meta as any).env?.SSR
 	? StaticRouter
 	: BrowserRouter;
 
@@ -22,7 +20,7 @@ export interface CreateAppContext {
 	reply: FastifyReply;
 	req: FastifyRequest;
 	server: ClientModule;
-};
+}
 
 export function createApp(
 	ctx: CreateAppContext,
@@ -37,6 +35,6 @@ export function createApp(
 			</Suspense>
 		</StrictMode>
 	);
-};
+}
 
 export type CreateApp = typeof createApp;

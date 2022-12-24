@@ -1,6 +1,6 @@
 interface OfferEventPayload {
-  participantIDs: string;
-  sdp: RTCSessionDescription;
-};
+	participantIDs: string;
+	sdp: RTCSessionDescription;
+}
 
 export default OfferEventPayload;
