@@ -1,12 +1,14 @@
 import { hydrateRoot } from 'react-dom/client';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { createApp } from './base';
+import { createApp } from './base.tsx';
 
 hydrateRoot(
 	// eslint-disable-next-line no-undef
 	document.querySelector('#root'),
-	// eslint-disable-next-line no-undef
-	createApp(window.hydration),
+	createApp(
+		// eslint-disable-next-line no-undef
+		window.hydration,
+		// eslint-disable-next-line no-undef
+		window.location.pathname,
+	),
 );

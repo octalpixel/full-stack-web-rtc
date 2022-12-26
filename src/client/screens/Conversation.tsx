@@ -4,18 +4,19 @@ import {
 	useReducer,
 	useRef,
 } from 'react';
+import { Socket } from 'socket.io-client';
 
-import Paper from '@mui/material/Paper';
-import { Typography } from '@mui/material';
+import Paper from '@mui/material/Paper/index.js';
+import Typography from '@mui/material/Typography/index.js';
 import { useParams } from 'react-router-dom';
 
-import conversationReducer, { ConversationState } from '../reducers/conversation';
-import AutoScrollMessages from '../components/AutoScrollMessages';
-import Peer from '../components/Peer';
-import { PreferencesContext } from '../contexts/preferences';
-import { Socket } from 'socket.io-client';
-import { UserContext } from '../contexts/user';
-import multilingualDictionary from '../constants/multilingual-dictionary';
+import conversationReducer, { ConversationState } from '../reducers/conversation.js';
+import AutoScrollMessages from '../components/AutoScrollMessages.jsx';
+import JoinConversationEventPayload from '../../types/socket-event-payloads/join-conversation.js';
+import Peer from '../components/Peer.jsx';
+import { PreferencesContext } from '../contexts/preferences.jsx';
+import { UserContext } from '../contexts/user.jsx';
+import multilingualDictionary from '../constants/multilingual-dictionary.js';
 
 interface PeerData {
 	socketID: string;
@@ -68,7 +69,7 @@ const Conversation = (): JSX.Element => {
 
 				socketRef.current?.emit(
 					'join-conversation',
-					{ participantIDs },
+					{ participantIDs } as JoinConversationEventPayload,
 				);
 
 				socketRef.current?.on(

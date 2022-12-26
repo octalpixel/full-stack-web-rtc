@@ -4,26 +4,23 @@ import React, {
 	useState,
 } from 'react';
 
-import AppBar from '@mui/material/AppBar';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import AppBar from '@mui/material/AppBar/index.js';
+import Dialog from '@mui/material/Dialog/index.js';
+import DialogTitle from '@mui/material/DialogTitle/index.js';
+import List from '@mui/material/List/index.js';
+import ListItemButton from '@mui/material/ListItemButton/index.js';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined.js';
+import Toolbar from '@mui/material/Toolbar/index.js';
+import Typography from '@mui/material/Typography/index.js';
 
-import NavigationButtonSet from './NavigationButtonSet';
-import { PreferencesContext } from '../contexts/preferences';
-import { UserContext } from '../contexts/user';
-import multilingualDictionary from '../constants/multilingual-dictionary';
-import { trpc } from '../hooks/trpc';
+import NavigationButtonSet from './NavigationButtonSet.jsx';
+import { PreferencesContext } from '../contexts/preferences.jsx';
+import { UserContext } from '../contexts/user.jsx';
+import multilingualDictionary from '../constants/multilingual-dictionary.js';
+import { trpc } from '../hooks/trpc.js';
 
 const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
-	const {
-		dispatchUserAction,
-		userState: { authenticated },
-	} = useContext(UserContext);
+	const { dispatchUserAction } = useContext(UserContext);
 	const { languageState } = useContext(PreferencesContext);
 	const logout = trpc.account.logout.useMutation();
 	const logoutAll = trpc.account.logoutAll.useMutation();
@@ -47,44 +44,39 @@ const Navigation = ({ children }: { children: JSX.Element }): JSX.Element => {
 		<>
 			<Dialog
 				onClose={() => setLogoutDialogOpen((prevState) => !prevState)}
-				open={authenticated && logoutDialogOpen}
+				open={logoutDialogOpen}
 			>
 				<DialogTitle>
 					{multilingualDictionary.LogoutConfirmationDialogTitle[languageState]}
 				</DialogTitle>
 				<List>
-					<ListItem
-						button
+					<ListItemButton
 						onClick={() => {
 							logout.mutate();
-							setLogoutDialogOpen((prevState) => !prevState);
+							setLogoutDialogOpen(false);
 						}}
 					>
 						<Typography variant="button">
 							{multilingualDictionary.LogoutThisDevice[languageState]}
 						</Typography>
-					</ListItem>
+					</ListItemButton>
 
-					<ListItem
-						button
+					<ListItemButton
 						onClick={() => {
 							logoutAll.mutate();
-							setLogoutDialogOpen((prevState) => !prevState);
+							setLogoutDialogOpen(false);
 						}}
 					>
 						<Typography variant="button">
 							{multilingualDictionary.LogoutAllDevices[languageState]}
 						</Typography>
-					</ListItem>
+					</ListItemButton>
 
-					<ListItem
-						button
-						onClick={() => setLogoutDialogOpen((prevState) => !prevState)}
-					>
+					<ListItemButton onClick={() => setLogoutDialogOpen(false)}>
 						<Typography variant="button">
 							{multilingualDictionary.CancelLogout[languageState]}
 						</Typography>
-					</ListItem>
+					</ListItemButton>
 				</List>
 			</Dialog>
 

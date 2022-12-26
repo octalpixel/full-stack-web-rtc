@@ -9,16 +9,16 @@ import {
 	Routes,
 } from 'react-router-dom';
 import { httpBatchLink } from '@trpc/client';
-import { trpc } from './hooks/trpc';
 
-import './App.css';
+// import './App.css';
 
-import About from './screens/About';
-import Conversation from './screens/Conversation';
-import Navigation from './components/Navigation';
-import { PreferencesProvider } from './contexts/preferences';
-import Profile from './screens/Profile';
-import { UserProvider } from './contexts/user';
+import About from './screens/About.jsx';
+import Conversation from './screens/Conversation.jsx';
+import Navigation from './components/Navigation.jsx';
+import { PreferencesProvider } from './contexts/preferences.jsx';
+import Profile from './screens/Profile.jsx';
+import { UserProvider } from './contexts/user.js';
+import { trpc } from './hooks/trpc.js';
 
 function App() {
 	const [queryClient] = useState(() => new QueryClient());

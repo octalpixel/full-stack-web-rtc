@@ -1,0 +1,8 @@
+{
+	"verbose": true,
+	"ignore": ["src/client/**.{css,html,js,jsx,ts,tsx}"],
+	"watch": ["src/**/*.ts"],
+	"execMap": {
+		"ts": "node --loader ts-node/esm"
+	}
+}

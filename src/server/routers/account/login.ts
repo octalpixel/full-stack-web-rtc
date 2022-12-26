@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import { z } from 'zod';
 
 import generateTokens from '../../utils/generate-tokens.js';
-import mongoClient from '../../mongo-client.js';
+import mongoClient from '../../constants/mongo-client.js';
 import { publicProcedure } from '../../trpc.js';
 
 const login = publicProcedure
@@ -16,6 +16,7 @@ const login = publicProcedure
 	)
 	.mutation(
 		async ({
+			ctx,
 			input: {
 				email,
 				password,
@@ -61,6 +62,7 @@ const login = publicProcedure
 				refreshToken,
 			} = await generateTokens({
 				clientID: clientID.toHexString(),
+				config: ctx.config,
 				userID: accounts[0]._id.toHexString(),
 				userName: accounts[0].name,
 			});

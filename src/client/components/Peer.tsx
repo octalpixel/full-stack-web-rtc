@@ -1,17 +1,10 @@
 import {
-	Dispatch,
-	MutableRefObject,
-	SetStateAction,
-	useCallback,
 	useContext,
 	useEffect,
 	useRef,
 } from 'react';
-import { useParams } from 'react-router-dom';
 
-import Message from '../types/message';
-import { UserContext } from '../contexts/user';
-import rtcConfiguration from '../constants/rtc-configuration';
+import { UserContext } from '../contexts/user.jsx';
 
 interface PeerProps {
 	peerConnection: RTCPeerConnection;

@@ -13,11 +13,11 @@ import {
 import {
 	ThemeProvider,
 	createTheme,
-} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+} from '@mui/material/styles/index.js';
+import useMediaQuery from '@mui/material/useMediaQuery/index.js';
 
-import { Language } from '../types/language';
-import { UserContext } from './user';
+import { Language } from '../../types/language.js';
+import { UserContext } from './user.jsx';
 
 interface PreferencesContextValue {
 	allowNotificationsState: boolean;

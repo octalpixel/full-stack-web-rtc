@@ -1,7 +1,11 @@
-import { createApp } from './base';
-import routes from './routes';
+import { createApp } from './base.jsx';
+import routes from './routes.js';
 
-export default {
+const clientModule = {
 	createApp,
 	routes,
 };
+
+export type ClientModule = typeof clientModule;
+
+export default clientModule;
