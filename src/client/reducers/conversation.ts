@@ -1,8 +1,16 @@
 import { Dispatch } from 'react';
 import { Socket } from 'socket.io-client';
 
-import Message from '../types/message';
-import rtcConfiguration from '../constants/rtc-configuration';
+import {
+	ReceiveICECandidateEventPayload,
+	SendICECandidateEventPayload,
+} from '../../types/socket-event-payloads/ice-candidate.js';
+import {
+	ReceiveSDPEventPayload,
+	SendSDPEventPayload,
+} from '../../types/socket-event-payloads/sdp.js';
+import Message from '../../types/message.js';
+import rtcConfiguration from '../constants/rtc-configuration.js';
 
 type CreatePeerAction = {
 	payload: { socketID: string };
@@ -15,18 +23,12 @@ type DisconnectPeerAction = {
 }
 
 type RecordAnswerAction = {
-	payload: {
-		sdp: RTCSessionDescriptionInit;
-		socketID: string;
-	};
+	payload: ReceiveSDPEventPayload;
 	type: 'RecordAnswer';
 };
 
 type RecordICECandidateAction = {
-	payload: {
-		candidate: RTCIceCandidateInit;
-		socketID: string;
-	};
+	payload: ReceiveICECandidateEventPayload;
 	type: 'RecordICECandidate';
 };
 
@@ -36,10 +38,7 @@ type RecordTextChatMessageAction = {
 };
 
 type RespondToOfferAction = {
-	payload: {
-		sdp: RTCSessionDescriptionInit;
-		socketID: string;
-	};
+	payload: ReceiveSDPEventPayload;
 	type: 'RespondToOffer';
 };
 
@@ -65,7 +64,6 @@ export default function conversationReducer(
 ): ConversationState {
 	const {
 		dispatchConversationAction,
-		participantIDs,
 		peers,
 		socket,
 		stream,
@@ -80,8 +78,8 @@ export default function conversationReducer(
 					'ice-candidate',
 					{
 						candidate: rtcPeerConnectionIceEvent.candidate,
-						participantIDs,
-					},
+						toSocketID: peerID,
+					} as SendICECandidateEventPayload,
 				);
 			}
 		};
@@ -94,9 +92,9 @@ export default function conversationReducer(
 				socket.emit(
 					'offer',
 					{
-						peerID,
 						sdp: peer.localDescription,
-					},
+						toSocketID: peerID,
+					} as SendSDPEventPayload,
 				);
 			})();
 		};
@@ -134,21 +132,21 @@ export default function conversationReducer(
 		case 'RecordAnswer': {
 			const {
 				payload: {
+					fromSocketID,
 					sdp,
-					socketID,
 				},
 			} = action;
-			peers[socketID].setRemoteDescription(sdp);
+			peers[fromSocketID].setRemoteDescription(sdp);
 			return state;
 		}
 		case 'RecordICECandidate': {
 			const {
 				payload: {
 					candidate,
-					socketID,
+					fromSocketID,
 				},
 			} = action;
-			peers[socketID].addIceCandidate(candidate);
+			peers[fromSocketID].addIceCandidate(candidate);
 			return state;
 		}
 		case 'RecordTextChatMessage': {
@@ -167,11 +165,11 @@ export default function conversationReducer(
 		case 'RespondToOffer': {
 			const {
 				payload: {
+					fromSocketID,
 					sdp,
-					socketID,
 				},
 			} = action;
-			const peer = createRTCPeerConnection(socketID);
+			const peer = createRTCPeerConnection(fromSocketID);
 			peer.ondatachannel = (rtcDataChannelEvent) => {
 				switch (rtcDataChannelEvent.channel.label) {
 					case 'text-chat':
@@ -204,16 +202,16 @@ export default function conversationReducer(
 				socket.emit(
 					'answer',
 					{
-						peerID: socketID,
 						sdp: peer.localDescription,
-					},
+						toSocketID: fromSocketID,
+					} as SendSDPEventPayload,
 				);
 			})();
 			return {
 				...state,
 				peers: {
 					...peers,
-					[socketID]: peer,
+					[fromSocketID]: peer,
 				},
 			};
 		}

@@ -1,13 +1,16 @@
 import { Socket } from 'socket.io';
 
-import OfferEventPayload from '../../types/socket-event-payloads/offer.js';
+import {
+	ReceiveSDPEventPayload,
+	SendSDPEventPayload,
+} from '../../types/socket-event-payloads/sdp.js';
 
 function socketOfferEventListener(
 	this: Socket,
 	{
 		sdp,
 		toSocketID,
-	}: OfferEventPayload,
+	}: SendSDPEventPayload,
 ) {
 	this
 		.to(toSocketID)
@@ -16,7 +19,7 @@ function socketOfferEventListener(
 			{
 				fromSocketID: this.id,
 				sdp,
-			},
+			} as ReceiveSDPEventPayload,
 		);
 }
 

@@ -15,6 +15,8 @@ import AutoScrollMessages from '../components/AutoScrollMessages.jsx';
 import JoinConversationEventPayload from '../../types/socket-event-payloads/join-conversation.js';
 import Peer from '../components/Peer.jsx';
 import { PreferencesContext } from '../contexts/preferences.jsx';
+import { ReceiveICECandidateEventPayload } from '../../types/socket-event-payloads/ice-candidate.js';
+import { ReceiveSDPEventPayload } from '../../types/socket-event-payloads/sdp.js';
 import { UserContext } from '../contexts/user.jsx';
 import multilingualDictionary from '../constants/multilingual-dictionary.js';
 
@@ -74,19 +76,10 @@ const Conversation = (): JSX.Element => {
 
 				socketRef.current?.on(
 					'answer',
-					({
-						sdp,
-						socketID,
-					}: {
-						sdp: RTCSessionDescriptionInit;
-						socketID: string;
-					}) => {
+					(payload: ReceiveSDPEventPayload) => {
 						console.log('answer');
 						dispatchConversationAction({
-							payload: {
-								sdp,
-								socketID,
-							},
+							payload,
 							type: 'RecordAnswer',
 						});
 					},
@@ -109,10 +102,7 @@ const Conversation = (): JSX.Element => {
 
 				socketRef.current?.on(
 					'ice-candidate',
-					(payload: {
-						candidate: RTCIceCandidateInit;
-						socketID: string;
-					}) => {
+					(payload: ReceiveICECandidateEventPayload) => {
 						dispatchConversationAction({
 							payload,
 							type: 'RecordICECandidate',
@@ -122,10 +112,7 @@ const Conversation = (): JSX.Element => {
 
 				socketRef.current?.on(
 					'offer',
-					(payload: {
-						sdp: RTCSessionDescriptionInit;
-						socketID: string;
-					}) => {
+					(payload: ReceiveSDPEventPayload) => {
 						dispatchConversationAction({
 							payload,
 							type: 'RespondToOffer',
