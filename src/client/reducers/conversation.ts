@@ -60,7 +60,10 @@ export type ConversationState = {
 
 export default function conversationReducer(
 	state: ConversationState,
-	action: ConversationAction,
+	{
+		payload,
+		type,
+	}: ConversationAction,
 ): ConversationState {
 	const {
 		dispatchConversationAction,
@@ -108,9 +111,9 @@ export default function conversationReducer(
 		return peer;
 	};
 
-	switch (action.type) {
+	switch (type) {
 		case 'CreatePeer': {
-			const { payload: { socketID } } = action;
+			const { socketID } = payload;
 
 			return {
 				...state,
@@ -121,7 +124,7 @@ export default function conversationReducer(
 			};
 		}
 		case 'DisconnectPeer': {
-			const { payload: { socketID } } = action;
+			const { socketID } = payload;
 			const shallowPeersClone = { ...peers };
 			delete shallowPeersClone[socketID];
 			return {
@@ -131,26 +134,21 @@ export default function conversationReducer(
 		}
 		case 'RecordAnswer': {
 			const {
-				payload: {
-					fromSocketID,
-					sdp,
-				},
-			} = action;
+				fromSocketID,
+				sdp,
+			} = payload;
 			peers[fromSocketID].setRemoteDescription(sdp);
 			return state;
 		}
 		case 'RecordICECandidate': {
 			const {
-				payload: {
-					candidate,
-					fromSocketID,
-				},
-			} = action;
+				candidate,
+				fromSocketID,
+			} = payload;
 			peers[fromSocketID].addIceCandidate(candidate);
 			return state;
 		}
 		case 'RecordTextChatMessage': {
-			const { payload } = action;
 			return {
 				...state,
 				textChat: [...textChat, payload].sort(
@@ -164,11 +162,9 @@ export default function conversationReducer(
 		}
 		case 'RespondToOffer': {
 			const {
-				payload: {
-					fromSocketID,
-					sdp,
-				},
-			} = action;
+				fromSocketID,
+				sdp,
+			} = payload;
 			const peer = createRTCPeerConnection(fromSocketID);
 			peer.ondatachannel = (rtcDataChannelEvent) => {
 				switch (rtcDataChannelEvent.channel.label) {

@@ -14,16 +14,12 @@ import conversationReducer, { ConversationState } from '../reducers/conversation
 import AutoScrollMessages from '../components/AutoScrollMessages.jsx';
 import JoinConversationEventPayload from '../../types/socket-event-payloads/join-conversation.js';
 import Peer from '../components/Peer.jsx';
+import PeerInfoPayload from '../../types/socket-event-payloads/peer-info.js';
 import { PreferencesContext } from '../contexts/preferences.jsx';
 import { ReceiveICECandidateEventPayload } from '../../types/socket-event-payloads/ice-candidate.js';
 import { ReceiveSDPEventPayload } from '../../types/socket-event-payloads/sdp.js';
 import { UserContext } from '../contexts/user.jsx';
 import multilingualDictionary from '../constants/multilingual-dictionary.js';
-
-interface PeerData {
-	socketID: string;
-	socketName: string;
-}
 
 const Conversation = (): JSX.Element => {
 	const { languageState } = useContext(PreferencesContext);
@@ -85,20 +81,20 @@ const Conversation = (): JSX.Element => {
 					},
 				);
 
-				socketRef.current?.on(
-					'conversation-joined',
-					({ peers }: { peers: PeerData[] }) => {
-						console.log('conversation-joined');
-						peers.forEach(
-							({ socketID }) => {
-								dispatchConversationAction({
-									payload: { socketID },
-									type: 'CreatePeer',
-								});
-							},
-						);
-					},
-				);
+				// socketRef.current?.on(
+				// 	'conversation-joined',
+				// 	(peers: PeerData[]) => {
+				// 		console.log('conversation-joined');
+				// 		peers.forEach(
+				// 			({ socketID }) => {
+				// 				dispatchConversationAction({
+				// 					payload: { socketID },
+				// 					type: 'CreatePeer',
+				// 				});
+				// 			},
+				// 		);
+				// 	},
+				// );
 
 				socketRef.current?.on(
 					'ice-candidate',
@@ -133,25 +129,22 @@ const Conversation = (): JSX.Element => {
 
 				socketRef.current?.on(
 					'peer-joined',
-					({ peer }: { peer: PeerData }) => {
-						console.log(`${peer.socketName} joined the conversation`);
+					(peer: PeerInfoPayload) => {
+						console.log(`${peer.name} joined the conversation`);
 						dispatchConversationAction({
 							payload: { socketID: peer.socketID },
 							type: 'CreatePeer',
 						});
 						socketRef.current?.emit(
-							'peer-connection-request',
-							{
-								participantIDs,
-								socketID: peer.socketID,
-							},
+							'greet-peer',
+							peer.socketID,
 						);
 					},
 				);
 
 				return () => {
 					socketRef.current?.off('answer');
-					socketRef.current?.off('conversation-joined');
+					// socketRef.current?.off('conversation-joined');
 					socketRef.current?.off('ice-candidate');
 					socketRef.current?.off('offer');
 					socketRef.current?.off('peer-disconnected');

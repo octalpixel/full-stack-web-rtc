@@ -17,12 +17,12 @@ function socketConnectionEventListener(this: FastifyServer, socket: Socket) {
 		'disconnecting',
 		socketDisconnectingEventListener.bind(socket),
 	);
-
+	
 	socket.on(
 		'ice-candidate',
 		socketICECandidateEventListener.bind(socket),
 	);
-
+		
 	socket.on(
 		'join-conversation',
 		socketJoinConversationEventListener.bind({
@@ -30,12 +30,12 @@ function socketConnectionEventListener(this: FastifyServer, socket: Socket) {
 			socket,
 		}),
 	);
-
+			
 	socket.on(
 		'offer',
 		socketOfferEventListener.bind(socket),
 	);
-
+				
 	// socket.on(
 	// 	'ping',
 	// 	() => {
@@ -45,6 +45,11 @@ function socketConnectionEventListener(this: FastifyServer, socket: Socket) {
 	// 		})();
 	// 	},
 	// );
+							
+	socket.on(
+		'welcome',
+		socketWelcomeEventListener.bind(socket),
+	);
 }
 
 export default socketConnectionEventListener;

@@ -16,31 +16,27 @@ function socketJoinConversationEventListener(
 		this.socket.to(participantIDs).emit(
 			'peer-joined',
 			{
-				peer: {
-					socketID: this.socket.id,
-					socketName: this.socket.data.userName,
-				},
+				peerName: this.socket.data.userName,
+				socketID: this.socket.id,
 			},
 		);
-		(async () => {
-			const peers = await this.server.io.in(participantIDs).fetchSockets();
-			this.server.io.to(this.socket.id).emit(
-				'conversation-joined',
-				{
-					// let the newly connected socket know who else has already joined the conversation
-					peers: peers
-						.filter(
-							(peer) => peer.id !== this.socket.id,
-						)
-						.map(
-							(peer) => ({
-								socketID: peer.id,
-								socketName: peer.data.userName,
-							}),
-						), 
-				},
-			);
-		})();
+		// (async () => {
+		// 	const peers = await this.server.io.in(participantIDs).fetchSockets();
+		// 	this.server.io.to(this.socket.id).emit(
+		// 		'conversation-joined',
+		// 		// let the newly connected socket know who else has already joined the conversation
+		// 		peers
+		// 			.filter(
+		// 				(peer) => peer.id !== this.socket.id,
+		// 			)
+		// 			.map(
+		// 				(peer) => ({
+		// 					socketID: peer.id,
+		// 					socketName: peer.data.userName,
+		// 				}),
+		// 			),
+		// 	);
+		// })();
 	} else {
 		this.socket._error(new Error('Access Denied.'));
 	}
