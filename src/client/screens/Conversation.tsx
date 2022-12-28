@@ -10,14 +10,16 @@ import Paper from '@mui/material/Paper/index.js';
 import Typography from '@mui/material/Typography/index.js';
 import { useParams } from 'react-router-dom';
 
+import {
+	ReceiveSDPEventPayload,
+	SendSDPEventPayload,
+} from '../../types/socket-event-payloads/sdp.js';
 import conversationReducer, { ConversationState } from '../reducers/conversation.js';
 import AutoScrollMessages from '../components/AutoScrollMessages.jsx';
-import JoinConversationEventPayload from '../../types/socket-event-payloads/join-conversation.js';
 import Peer from '../components/Peer.jsx';
 import PeerInfoPayload from '../../types/socket-event-payloads/peer-info.js';
 import { PreferencesContext } from '../contexts/preferences.jsx';
 import { ReceiveICECandidateEventPayload } from '../../types/socket-event-payloads/ice-candidate.js';
-import { ReceiveSDPEventPayload } from '../../types/socket-event-payloads/sdp.js';
 import { UserContext } from '../contexts/user.jsx';
 import multilingualDictionary from '../constants/multilingual-dictionary.js';
 
@@ -30,15 +32,11 @@ const Conversation = (): JSX.Element => {
 	const { participantIDs } = useParams();
 	const cameraFeedVideoRef = useRef<HTMLVideoElement>(null);
 	const streamRef = useRef<MediaStream>();
-	// const [peersState, setPeersState] = useState<PeerData[]>([]);
 	const [conversationState, dispatchConversationAction] = useReducer(
 		conversationReducer,
 		{
-			dispatchConversationAction: () => { /*  */ },
-			participantIDs: '',
 			peers: {},
 			socket: null as unknown as Socket,
-			stream: null as unknown as MediaStream,
 			textChat: [],
 		} as ConversationState,
 	);
@@ -52,95 +50,176 @@ const Conversation = (): JSX.Element => {
 							audio: true,
 							video: true,
 						});
-						if (cameraFeedVideoRef.current) {
-							// eslint-disable-next-line prefer-destructuring
-							cameraFeedVideoRef.current.srcObject = streamRef.current;
-						}
 						// streamRef.current = await navigator.mediaDevices.getDisplayMedia({
 						// 	audio: false, 
 						// 	video: true,
 						// });
+						if (cameraFeedVideoRef.current) {
+							// eslint-disable-next-line prefer-destructuring
+							cameraFeedVideoRef.current.srcObject = streamRef.current;
+						}
+
+						socketRef.current?.emit(
+							'join-conversation',
+							participantIDs,
+						);
+
+						socketRef.current?.on(
+							'answer',
+							({
+								fromSocketID,
+								sdp: {
+									sdp,
+									type,
+								},
+							}: ReceiveSDPEventPayload) => {
+								console.log('answer');
+								conversationState
+									.peers[fromSocketID]
+									.connection
+									.setRemoteDescription({
+										sdp,
+										type,
+									});
+							},
+						);
+
+						socketRef.current?.on(
+							'ice-candidate',
+							({
+								candidate: {
+									candidate,
+									sdpMLineIndex,
+									sdpMid,
+									usernameFragment,
+								},
+								fromSocketID,
+							}: ReceiveICECandidateEventPayload) => {
+								conversationState
+									.peers[fromSocketID]
+									.connection
+									.addIceCandidate({
+										candidate,
+										sdpMLineIndex,
+										sdpMid,
+										usernameFragment,
+									});
+							},
+						);
+
+						socketRef.current?.on(
+							'offer',
+							({
+								fromSocketID,
+								sdp: {
+									sdp,
+									type,
+								},
+							}: ReceiveSDPEventPayload) => {
+								(async () => {
+									await conversationState
+										.peers[fromSocketID]
+										.connection
+										.setRemoteDescription({
+											sdp,
+											type,
+										});
+
+									if (
+										!conversationState.peers[fromSocketID].connection.getSenders().length
+										&& streamRef.current
+									) {
+										streamRef
+											.current
+											.getTracks()
+											.forEach(
+												(track) => {
+													conversationState
+														.peers[fromSocketID]
+														.connection
+														.addTrack(
+															track,
+															streamRef.current as MediaStream,
+														);
+												},
+											);
+									}
+
+									const answer = await conversationState
+										.peers[fromSocketID]
+										.connection
+										.createAnswer();
+									await conversationState
+										.peers[fromSocketID]
+										.connection
+										.setLocalDescription(answer);
+									socketRef.current?.emit(
+										'answer',
+										{
+											sdp: conversationState.peers[fromSocketID].connection.localDescription,
+											toSocketID: fromSocketID,
+										} as SendSDPEventPayload,
+									);
+								})();
+							},
+						);
+
+						socketRef.current?.on(
+							'peer-disconnected',
+							({ socketID }: { socketID: string }) => {
+								console.log('peer-disconnected');
+								dispatchConversationAction({
+									payload: { socketID },
+									type: 'DisconnectPeer',
+								});
+							},
+						);
+
+						socketRef.current?.on(
+							'peer-joined',
+							(payload: PeerInfoPayload) => {
+								console.log(`${payload.name} joined the conversation`);
+								socketRef.current?.emit(
+									'welcome',
+									payload.socketID,
+								);
+								dispatchConversationAction({
+									payload,
+									type: 'CreatePeer',
+								});
+								if (streamRef.current) {
+									streamRef
+										.current
+										.getTracks()
+										.forEach(
+											(track) => {
+												conversationState
+													.peers[payload.socketID]
+													.connection
+													.addTrack(
+														track,
+														streamRef.current as MediaStream,
+													);
+											},
+										);
+								}
+							},
+						);
+
+						socketRef.current?.on(
+							'welcome',
+							(payload: PeerInfoPayload) => {
+								console.log(`${payload.name} welcomed you to the conversation`);
+								dispatchConversationAction({
+									payload,
+									type: 'CreatePeer',
+								});
+							},
+						);
 					} catch (error) {
 						console.log(error);
 					}
 				})();
-
-				socketRef.current?.emit(
-					'join-conversation',
-					{ participantIDs } as JoinConversationEventPayload,
-				);
-
-				socketRef.current?.on(
-					'answer',
-					(payload: ReceiveSDPEventPayload) => {
-						console.log('answer');
-						dispatchConversationAction({
-							payload,
-							type: 'RecordAnswer',
-						});
-					},
-				);
-
-				// socketRef.current?.on(
-				// 	'conversation-joined',
-				// 	(peers: PeerData[]) => {
-				// 		console.log('conversation-joined');
-				// 		peers.forEach(
-				// 			({ socketID }) => {
-				// 				dispatchConversationAction({
-				// 					payload: { socketID },
-				// 					type: 'CreatePeer',
-				// 				});
-				// 			},
-				// 		);
-				// 	},
-				// );
-
-				socketRef.current?.on(
-					'ice-candidate',
-					(payload: ReceiveICECandidateEventPayload) => {
-						dispatchConversationAction({
-							payload,
-							type: 'RecordICECandidate',
-						});
-					},
-				);
-
-				socketRef.current?.on(
-					'offer',
-					(payload: ReceiveSDPEventPayload) => {
-						dispatchConversationAction({
-							payload,
-							type: 'RespondToOffer',
-						});
-					},
-				);
-
-				socketRef.current?.on(
-					'peer-disconnected',
-					({ socketID }: { socketID: string }) => {
-						console.log('peer-disconnected');
-						dispatchConversationAction({
-							payload: { socketID },
-							type: 'DisconnectPeer',
-						});
-					},
-				);
-
-				socketRef.current?.on(
-					'peer-joined',
-					(peer: PeerInfoPayload) => {
-						console.log(`${peer.name} joined the conversation`);
-						dispatchConversationAction({
-							payload: { socketID: peer.socketID },
-							type: 'CreatePeer',
-						});
-						socketRef.current?.emit(
-							'greet-peer',
-							peer.socketID,
-						);
-					},
-				);
 
 				return () => {
 					socketRef.current?.off('answer');
@@ -149,6 +228,7 @@ const Conversation = (): JSX.Element => {
 					socketRef.current?.off('offer');
 					socketRef.current?.off('peer-disconnected');
 					socketRef.current?.off('peer-joined');
+					socketRef.current?.off('welcome');
 				};
 			}
 		},
@@ -199,10 +279,11 @@ const Conversation = (): JSX.Element => {
 				{Object
 					.entries(conversationState.peers)
 					.map(
-						([socketID, peerConnection]) => (
+						([socketID, peer]) => (
 							<Peer
+								dispatchConversationAction={dispatchConversationAction}
 								key={socketID}
-								peerConnection={peerConnection}
+								{...peer}
 							/>
 						),
 					)}
@@ -214,6 +295,11 @@ const Conversation = (): JSX.Element => {
 						payload: message,
 						type: 'RecordTextChatMessage',
 					});
+					Object
+						.values(conversationState.peers)
+						.forEach(
+							({ textChatChannel }) => textChatChannel.send(JSON.stringify(message)),
+						);
 				}}
 			/>
 		</>

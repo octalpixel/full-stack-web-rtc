@@ -8,10 +8,8 @@ function socketDisconnectingEventListener(this: Socket) {
 				.emit(
 					'peer-disconnected',
 					{
-						peer: {
-							socketID: this.id,
-							socketName: this.data.userName,
-						},
+						socketID: this.id,
+						socketName: this.data.userName,
 					},
 				);
 		},

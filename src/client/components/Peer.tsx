@@ -1,77 +1,43 @@
 import {
+	Dispatch,
 	useContext,
 	useEffect,
 	useRef,
 } from 'react';
 
+import { ConversationAction } from '../reducers/conversation.js';
 import { UserContext } from '../contexts/user.jsx';
 
 interface PeerProps {
-	peerConnection: RTCPeerConnection;
+	connection: RTCPeerConnection;
+	dispatchConversationAction: Dispatch<ConversationAction>;
+	name: string;
+	textChatChannel: RTCDataChannel;
 }
 
-const Peer = ({ peerConnection }: PeerProps): JSX.Element => {
+const Peer = ({
+	connection,
+	dispatchConversationAction,
+	name,
+	textChatChannel,
+}: PeerProps): JSX.Element => {
 	const { socketRef } = useContext(UserContext);
-	const textChatChannelRef = useRef<RTCDataChannel>();
 	const videoRef = useRef<HTMLVideoElement>(null);
 
 	useEffect(
 		() => {
-			socketRef.current?.on(
-				`${socketID}-peer-connection-requested`,
-				() => {
-					console.log('peer-connection-requested');
-					createRTCPeerConnection();
-					textChatChannelRef.current = peerRef.current?.createDataChannel('text-chat');
-
-					if (textChatChannelRef.current) {
-						textChatChannelRef.current.onmessage = handleIncomingTextChatMessage;
-					}
-
-					if (streamRef.current) {
-						streamRef.current
-							.getTracks()
-							.forEach(
-								(track) => {
-									peerRef.current?.addTrack(
-										track,
-										streamRef.current as MediaStream,
-									);
-								},
-							);
-					} else {
-						const timer = setInterval(
-							() => {
-								if (streamRef.current) {
-									clearInterval(timer);
-									streamRef.current
-										.getTracks()
-										.forEach(
-											(track) => {
-												peerRef.current?.addTrack(
-													track,
-													streamRef.current as MediaStream,
-												);
-											},
-										);
-								}
-							},
-							100,
-						);
-					}
-				},
-			);
-
-			return () => {
-				socketRef.current?.off(`${socketID}-peer-connection-requested`);
+			textChatChannel.onmessage = (messageEvent) => {
+				dispatchConversationAction({
+					payload: JSON.parse(messageEvent.data),
+					type: 'RecordTextChatMessage',
+				});
 			};
-		},
-		[],
-	);
-
-	useEffect(
-		() => {
-			
+			connection.ontrack = (rtcTrackEvent) => {
+				if (videoRef.current) {
+					// eslint-disable-next-line prefer-destructuring
+					videoRef.current.srcObject = rtcTrackEvent.streams[0];
+				}
+			};
 		},
 		[],
 	);
