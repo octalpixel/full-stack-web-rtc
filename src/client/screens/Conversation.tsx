@@ -4,7 +4,6 @@ import {
 	useReducer,
 	useRef,
 } from 'react';
-import { Socket } from 'socket.io-client';
 
 import Paper from '@mui/material/Paper/index.js';
 import Typography from '@mui/material/Typography/index.js';
@@ -36,7 +35,6 @@ const Conversation = (): JSX.Element => {
 		conversationReducer,
 		{
 			peers: {},
-			socket: null as unknown as Socket,
 			textChat: [],
 		} as ConversationState,
 	);
@@ -73,10 +71,10 @@ const Conversation = (): JSX.Element => {
 									type,
 								},
 							}: ReceiveSDPEventPayload) => {
-								console.log('answer');
+								console.log(JSON.stringify(sdp));
 								conversationState
 									.peers[fromSocketID]
-									.connection
+									?.connection
 									.setRemoteDescription({
 										sdp,
 										type,
@@ -95,9 +93,10 @@ const Conversation = (): JSX.Element => {
 								},
 								fromSocketID,
 							}: ReceiveICECandidateEventPayload) => {
+								console.log(`incoming ice candidate: ${JSON.stringify(candidate)}`);
 								conversationState
 									.peers[fromSocketID]
-									.connection
+									?.connection
 									.addIceCandidate({
 										candidate,
 										sdpMLineIndex,
@@ -116,17 +115,19 @@ const Conversation = (): JSX.Element => {
 									type,
 								},
 							}: ReceiveSDPEventPayload) => {
+								console.log(`incoming offer: ${sdp}`);
 								(async () => {
 									await conversationState
 										.peers[fromSocketID]
-										.connection
+										?.connection
 										.setRemoteDescription({
 											sdp,
 											type,
 										});
-
+									console.log('remote description set');
 									if (
-										!conversationState.peers[fromSocketID].connection.getSenders().length
+										conversationState.peers[fromSocketID]
+										&& !conversationState.peers[fromSocketID].connection.getSenders().length
 										&& streamRef.current
 									) {
 										streamRef
@@ -143,23 +144,27 @@ const Conversation = (): JSX.Element => {
 														);
 												},
 											);
+										console.log('tracks added');
 									}
 
 									const answer = await conversationState
 										.peers[fromSocketID]
-										.connection
+										?.connection
 										.createAnswer();
+									console.log(`answer created: ${JSON.stringify(answer)}`);
 									await conversationState
 										.peers[fromSocketID]
-										.connection
+										?.connection
 										.setLocalDescription(answer);
+									console.log(`local description set: ${JSON.stringify(conversationState.peers[fromSocketID]?.connection.localDescription)}`);
 									socketRef.current?.emit(
 										'answer',
 										{
-											sdp: conversationState.peers[fromSocketID].connection.localDescription,
+											sdp: conversationState.peers[fromSocketID]?.connection.localDescription,
 											toSocketID: fromSocketID,
 										} as SendSDPEventPayload,
 									);
+									console.log('answer emitted');
 								})();
 							},
 						);
@@ -195,7 +200,7 @@ const Conversation = (): JSX.Element => {
 											(track) => {
 												conversationState
 													.peers[payload.socketID]
-													.connection
+													?.connection
 													.addTrack(
 														track,
 														streamRef.current as MediaStream,
@@ -269,7 +274,6 @@ const Conversation = (): JSX.Element => {
 			<Paper>
 				<video
 					autoPlay
-					controls
 					ref={cameraFeedVideoRef}
 					style={{
 						height: 'auto',
@@ -283,6 +287,7 @@ const Conversation = (): JSX.Element => {
 							<Peer
 								dispatchConversationAction={dispatchConversationAction}
 								key={socketID}
+								socketID={socketID}
 								{...peer}
 							/>
 						),

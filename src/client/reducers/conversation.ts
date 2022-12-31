@@ -1,9 +1,5 @@
-import { Socket } from 'socket.io-client';
-
 import Message from '../../types/message.js';
 import PeerInfoPayload from '../../types/socket-event-payloads/peer-info.js';
-import { SendICECandidateEventPayload } from '../../types/socket-event-payloads/ice-candidate.js';
-import { SendSDPEventPayload } from '../../types/socket-event-payloads/sdp.js';
 import rtcConfiguration from '../constants/rtc-configuration.js';
 
 type CreatePeerAction = {
@@ -34,7 +30,6 @@ export type ConversationState = {
 			textChatChannel: RTCDataChannel;
 		}
 	>;
-	socket: Socket;
 	textChat: Message[];
 };
 
@@ -47,7 +42,6 @@ export default function conversationReducer(
 ): ConversationState {
 	const {
 		peers,
-		socket,
 		textChat,
 	} = state;
 	switch (type) {
@@ -62,33 +56,6 @@ export default function conversationReducer(
 					...peers,
 					[socketID]: (() => {
 						const connection = new RTCPeerConnection(rtcConfiguration);
-						connection.onicecandidate = (rtcPeerConnectionIceEvent) => {
-							console.log('ice-candidate');
-							if (rtcPeerConnectionIceEvent.candidate) {
-								socket.emit(
-									'ice-candidate',
-									{
-										candidate: rtcPeerConnectionIceEvent.candidate,
-										toSocketID: socketID,
-									} as SendICECandidateEventPayload,
-								);
-							}
-						};
-
-						connection.onnegotiationneeded = () => {
-							(async () => {
-								console.log('negotiation-needed');
-								const offer = await connection.createOffer();
-								await connection.setLocalDescription(offer);
-								socket.emit(
-									'offer',
-									{
-										sdp: connection.localDescription,
-										toSocketID: socketID,
-									} as SendSDPEventPayload,
-								);
-							})();
-						};
 
 						return {
 							connection,
