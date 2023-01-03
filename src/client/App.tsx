@@ -14,6 +14,7 @@ import { httpBatchLink } from '@trpc/client';
 
 import About from './screens/About.jsx';
 import Conversation from './screens/Conversation.jsx';
+import { ConversationProvider } from './contexts/conversation.jsx';
 import Navigation from './components/Navigation.jsx';
 import { PreferencesProvider } from './contexts/preferences.jsx';
 import Profile from './screens/Profile.jsx';
@@ -54,7 +55,11 @@ function App() {
 										path="/"
 									/>
 									<Route
-										element={<Conversation />}
+										element={
+											<ConversationProvider>
+												<Conversation />
+											</ConversationProvider>
+										}
 										path="/conversation/:participantIDs"
 									/>
 									<Route

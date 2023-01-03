@@ -1,4 +1,4 @@
-const rtcConfiguration = {
+const rtcConfiguration: RTCConfiguration = {
 	iceServers: [
 		{
 			urls: [
