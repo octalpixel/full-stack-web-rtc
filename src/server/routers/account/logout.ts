@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 
-import mongoClient from '../../mongo-client.js';
+import mongoClient from '../../constants/mongo-client.js';
 import { publicProcedure } from '../../trpc.js';
 
-const logoutAll = publicProcedure
+const logout = publicProcedure
 	.mutation(
 		async ({ ctx: { bearer } }) => {
 			mongoClient
@@ -11,11 +11,11 @@ const logoutAll = publicProcedure
 				.collection('accounts')
 				.updateOne(
 					{ _id: new ObjectId(bearer?.userID) },
-					{ $set: { clients: [] } },
+					{ $pull: { clients: { _id: new ObjectId(bearer?.clientID) } } },
 				);
 
 			return;
 		},
 	);
 
-export default logoutAll;
+export default logout;

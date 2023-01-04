@@ -5,16 +5,19 @@ import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
 import generateTokens from '../../utils/generate-tokens.js';
-import mongoClient from '../../mongo-client.js';
+import mongoClient from '../../constants/mongo-client.js';
 import { publicProcedure } from '../../trpc.js';
 
 const refresh = publicProcedure
 	.input(z.string())
 	.mutation(
-		async ({ input }) => {
+		async ({
+			ctx,
+			input,
+		}) => {
 			const decodedToken = jwt.verify(
 				input,
-				process.env.JWT_REFRESH_SECRET as string,
+				ctx.config.JWT_REFRESH_SECRET,
 			);
 
 			if (typeof decodedToken === 'string') {
@@ -99,6 +102,7 @@ const refresh = publicProcedure
 				refreshToken,
 			} = await generateTokens({
 				clientID: decodedToken.clientID,
+				config: ctx.config,
 				userID: decodedToken.sub,
 				userName: accounts[0].name,
 			});

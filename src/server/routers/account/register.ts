@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import { z } from 'zod';
 
 import generateTokens from '../../utils/generate-tokens.js';
-import mongoClient from '../../mongo-client.js';
+import mongoClient from '../../constants/mongo-client.js';
 import { publicProcedure } from '../../trpc.js';
 
 const register = publicProcedure
@@ -17,6 +17,7 @@ const register = publicProcedure
 	)
 	.mutation(
 		async ({
+			ctx,
 			input: {
 				email,
 				name,
@@ -25,7 +26,7 @@ const register = publicProcedure
 		}) => {
 			const hashedPassword = await bcrypt.hash(
 				password,
-				parseInt(process.env.SALT_ROUNDS as string),
+				ctx.config.SALT_ROUNDS,
 			);
 			const userID = new ObjectId();
 			const clientID = new ObjectId();
@@ -35,6 +36,7 @@ const register = publicProcedure
 				refreshToken,
 			} = await generateTokens({
 				clientID: clientID.toHexString(),
+				config: ctx.config,
 				userID: userID.toHexString(),
 				userName: name,
 			});

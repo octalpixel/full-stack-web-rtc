@@ -1,24 +1,23 @@
 import React, {
+	ReactNode,
 	useContext,
 	useRef,
 	useState,
 } from 'react';
-import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/material/styles';
+import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined.js';
+import Button from '@mui/material/Button/index.js';
+import Card from '@mui/material/Card/index.js';
+import CardActions from '@mui/material/CardActions/index.js';
+import CardContent from '@mui/material/CardContent/index.js';
+import CardHeader from '@mui/material/CardHeader/index.js';
+import Paper from '@mui/material/Paper/index.js';
+import TextField from '@mui/material/TextField/index.js';
+import Typography from '@mui/material/Typography/index.js';
+import { useTheme } from '@mui/material/styles/index.js';
 import { v4 as uuidv4 } from 'uuid';
 
-import Message from '../types/message';
-
-import { ReactNode } from 'react';
-import { UserContext } from '../contexts/user';
+import Message from '../../types/message.js';
+import { UserContext } from '../contexts/user.jsx';
 
 interface AutoScrollMessagesProps {
 	messages: Message[];

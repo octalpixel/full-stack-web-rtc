@@ -1,4 +1,4 @@
-import Paper from '@mui/material/Paper';
+import Paper from '@mui/material/Paper/index.js';
 
 const About = (): JSX.Element => {
 

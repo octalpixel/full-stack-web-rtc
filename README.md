@@ -6,6 +6,7 @@ We value privacy and free speech.  We will never censor, modify, clarify, delete
 
 ## Built With
 
+- Docker (https://docs.docker.com/)
 -	Fastify (https://www.fastify.io/docs/latest/)
 -	JSONWebTokens (https://jwt.io/introduction)
 -	Material UI (https://mui.com/material-ui/getting-started/overview/)
@@ -19,3 +20,29 @@ We value privacy and free speech.  We will never censor, modify, clarify, delete
 -	Vite (https://vitejs.dev/guide/)
 -	WebRTC (https://webrtc.org/)
 -	Zod (https://zod.dev/)
+
+## Getting Started
+
+Open a terminal and navigate to where you would like the project directory to live (perhaps ~/Git or ~/projects; something like that).  Then clone the repository with:
+
+```
+git clone https://github.com/theMostCuriousHomunculus/full-stack-web-rtc.git
+```
+
+Navigate into the newly created subdirectory with:
+
+```
+cd full-stack-web-rtc
+```
+
+The simplest way to get up and running is to download and install Docker Desktop on your machine if you don't have it already (follow the instructions in the Docker documentation linked above).  Then in your terminal:
+
+```
+docker-compose up -d
+```
+
+And when you're done:
+
+```
+docker-compose down
+```

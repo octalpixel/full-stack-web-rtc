@@ -11,13 +11,13 @@ import {
 } from 'react';
 
 import io, { Socket } from 'socket.io-client';
-import AuthForm from '../components/AuthForm';
 
 import userReducer, {
 	UserAction,
 	UserState,
 	unauthenticatedUserState,
-} from '../reducers/user';
+} from '../reducers/user.js';
+import AuthForm from '../components/AuthForm.jsx';
 
 interface UserContextValue {
 	dispatchUserAction: Dispatch<UserAction>;
